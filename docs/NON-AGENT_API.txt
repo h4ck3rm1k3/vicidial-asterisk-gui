@@ -15,6 +15,10 @@ New scripts:
 /vicidial/non_agent_api.php - the script that is accessed to execute commands
 
 
+Changes:
+80724-1723 - First build
+90428-0208 - Added blind_monitor function
+
 
 
 API Functions: ('function' variable)
@@ -35,10 +39,43 @@ VERSION: 2.0.5-4|BUILD: 80910-0020|DATE: 2008-09-10 00:26:43|EPOCH: 1221020803
 
 
 
+
+--------------------------------------------------------------------------------
+blind_monitor - calls user-defined phone and places them in session as blind monitor
+
+NOTE: api user for this function must have user_level set to 7 or higher
+
+REQUIRED FIELDS-
+phone_login -		alpha-numeric, no spaces or special characters allowed
+session_id -		must be all numbers, 7 digits
+server_ip -		must be all numbers and dots, max 15 characters
+source -		description of what originated the API call (maximum 20 characters)
+stage -			MONITOR, BARGE or HIJACK, default is MONITOR
+			 (HIJACK option is not currently functional)
+
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?source=test&user=6666&pass=1234&function=blind_monitor&phone_login=350a&session_id=8600051&server_ip=10.10.10.16&stage=MONITOR
+
+Example responses:
+SUCCESS: blind_monitor HAS BEEN LAUNCHED - 350a|010*010*010*017*350|8600051
+
+ERROR: blind_monitor INVALID PHONE LOGIN - 350q 
+
+ERROR: blind_monitor INVALID SESSION ID - 8602051 
+
+ERROR: blind_monitor USER DOES NOT HAVE PERMISSION TO BLIND MONITOR - 6666|0 
+
+ERROR: NO FUNCTION SPECIFIED
+
+
+
+
 --------------------------------------------------------------------------------
 add_lead - adds a new lead to the vicidial_list table with several fields and options
 
-NOTE: api user for this function must have modify_leads set to 1
+NOTE: api user for this function must have modify_leads set to 1 and user_level
+      must be set to 8 or higher
 
 REQUIRED FIELDS-
 phone_number -		must be all numbers, 6-16 digits

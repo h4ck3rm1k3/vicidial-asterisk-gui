@@ -30,3 +30,24 @@ ALTER TABLE vicidial_users ADD user_code VARCHAR(100) default '';
 ALTER TABLE vicidial_users ADD territory VARCHAR(100) default '';
 
 UPDATE system_settings SET db_schema_version='1138';
+
+ALTER TABLE vicidial_campaigns ADD survey_third_digit VARCHAR(1) default '';
+ALTER TABLE vicidial_campaigns ADD survey_third_audio_file VARCHAR(50) default 'US_thanks_no_contact';
+ALTER TABLE vicidial_campaigns ADD survey_third_status VARCHAR(6) default 'NI';
+ALTER TABLE vicidial_campaigns ADD survey_third_exten VARCHAR(20) default '8300';
+ALTER TABLE vicidial_campaigns ADD survey_fourth_digit VARCHAR(1) default '';
+ALTER TABLE vicidial_campaigns ADD survey_fourth_audio_file VARCHAR(50) default 'US_thanks_no_contact';
+ALTER TABLE vicidial_campaigns ADD survey_fourth_status VARCHAR(6) default 'NI';
+ALTER TABLE vicidial_campaigns ADD survey_fourth_exten VARCHAR(20) default '8300';
+
+ALTER TABLE system_settings ADD enable_tts_integration ENUM('0','1') default '0';
+
+CREATE TABLE vicidial_tts_prompts (
+tts_id VARCHAR(50) PRIMARY KEY NOT NULL,
+tts_name VARCHAR(100),
+active ENUM('Y','N'),
+tts_text TEXT
+);
+
+UPDATE system_settings SET db_schema_version='1139';
+

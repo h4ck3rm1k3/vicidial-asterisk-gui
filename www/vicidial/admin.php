@@ -974,7 +974,22 @@ if (isset($_GET["user_code"]))					{$user_code=$_GET["user_code"];}
 	elseif (isset($_POST["user_code"]))			{$user_code=$_POST["user_code"];}
 if (isset($_GET["territory"]))					{$territory=$_GET["territory"];}
 	elseif (isset($_POST["territory"]))			{$territory=$_POST["territory"];}
-
+if (isset($_GET["survey_third_digit"]))				{$survey_third_digit=$_GET["survey_third_digit"];}
+	elseif (isset($_POST["survey_third_digit"]))	{$survey_third_digit=$_POST["survey_third_digit"];}
+if (isset($_GET["survey_fourth_digit"]))			{$survey_fourth_digit=$_GET["survey_fourth_digit"];}
+	elseif (isset($_POST["survey_fourth_digit"]))	{$survey_fourth_digit=$_POST["survey_fourth_digit"];}
+if (isset($_GET["survey_third_audio_file"]))			{$survey_third_audio_file=$_GET["survey_third_audio_file"];}
+	elseif (isset($_POST["survey_third_audio_file"]))	{$survey_third_audio_file=$_POST["survey_third_audio_file"];}
+if (isset($_GET["survey_fourth_audio_file"]))			{$survey_fourth_audio_file=$_GET["survey_fourth_audio_file"];}
+	elseif (isset($_POST["survey_fourth_audio_file"]))	{$survey_fourth_audio_file=$_POST["survey_fourth_audio_file"];}
+if (isset($_GET["survey_third_status"]))				{$survey_third_status=$_GET["survey_third_status"];}
+	elseif (isset($_POST["survey_third_status"]))		{$survey_third_status=$_POST["survey_third_status"];}
+if (isset($_GET["survey_fourth_status"]))				{$survey_fourth_status=$_GET["survey_fourth_status"];}
+	elseif (isset($_POST["survey_fourth_status"]))		{$survey_fourth_status=$_POST["survey_fourth_status"];}
+if (isset($_GET["survey_third_exten"]))					{$survey_third_exten=$_GET["survey_third_exten"];}
+	elseif (isset($_POST["survey_third_exten"]))		{$survey_third_exten=$_POST["survey_third_exten"];}
+if (isset($_GET["survey_fourth_exten"]))				{$survey_fourth_exten=$_GET["survey_fourth_exten"];}
+	elseif (isset($_POST["survey_fourth_exten"]))		{$survey_fourth_exten=$_POST["survey_fourth_exten"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1250,6 +1265,8 @@ $agent_pause_codes_active = ereg_replace("[^0-9a-zA-Z]","",$agent_pause_codes_ac
 $three_way_dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$three_way_dial_prefix);
 $shift_enforcement = ereg_replace("[^0-9a-zA-Z]","",$shift_enforcement);
 $agent_shift_enforcement_override = ereg_replace("[^0-9a-zA-Z]","",$agent_shift_enforcement_override);
+$survey_third_status = ereg_replace("[^0-9a-zA-Z]","",$survey_third_status);
+$survey_fourth_status = ereg_replace("[^0-9a-zA-Z]","",$survey_fourth_status);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1264,6 +1281,10 @@ $vtiger_server_ip = ereg_replace("[^\.0-9]","",$vtiger_server_ip);
 ### ALPHA-NUMERIC and spaces and hash and star and comma
 $xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
 $xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_b_dtmf);
+$survey_third_digit = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$survey_third_digit);
+$survey_fourth_digit = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$survey_fourth_digit);
+$survey_third_exten = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$survey_third_exten);
+$survey_fourth_exten = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$survey_fourth_exten);
 
 ### ALPHACAPS-NUMERIC
 $xferconf_a_number = ereg_replace("[^0-9A-Z]","",$xferconf_a_number);
@@ -1375,6 +1396,8 @@ $carrier_id = ereg_replace("[^-\_0-9a-zA-Z]","",$carrier_id);
 $group_alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$group_alias_id);
 $default_group_alias = ereg_replace("[^-\_0-9a-zA-Z]","",$default_group_alias);
 $vtiger_search_dead = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_search_dead);
+$survey_third_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_third_audio_file);
+$survey_fourth_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_fourth_audio_file);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1682,11 +1705,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90413-0755 - Fixed filter and script slashes issues
 # 90417-0211 - Fixed filter and script slashes issues
 # 90422-0613 - Added user_code, territory and email to vicidial_users
+# 90429-0542 - Added 3rd&4th options to SURVEY campaigns
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-179';
-$build = '90422-0613';
+$admin_version = '2.2.0-180';
+$build = '90429-0542';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3183,7 +3207,7 @@ if ($SSoutbound_autodial_active > 0)
 	<BR>
 	<A NAME="vicidial_campaigns-survey_dtmf_digits">
 	<BR>
-	<B>Survey DTMF Digits -</B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are 0123456789*#
+	<B>Survey DTMF Digits -</B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are 0123456789*#. All options except for the Not Interested, Third and Fourth digit options will move on to the Survey Method call path.
 
 	<BR>
 	<A NAME="vicidial_campaigns-survey_ni_digit">
@@ -3229,6 +3253,32 @@ if ($SSoutbound_autodial_active > 0)
 	<A NAME="vicidial_campaigns-survey_camp_record_dir">
 	<BR>
 	<B>Survey Campaign Recording Directory -</B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_third_digit">
+	<BR>
+	<B>Survey Third Digit -</B> This allows for a third call path if the Third digit as defined in this field is pressed by the customer.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_fourth_digit">
+	<BR>
+	<B>Survey Fourth Digit -</B> This allows for a fourth call path if the Fourth digit as defined in this field is pressed by the customer.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_third_audio_file">
+	<BR>
+	<B>Survey Third Audio File -</B> This is the third audio file to be played upon the selection by the customer of the Third Digit option.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_third_status">
+	<BR>
+	<B>Survey Third Status -</B> This is the third status used for the call upon the selection by the customer of the Third Digit option.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_third_exten">
+	<BR>
+	<B>Survey Third Extension -</B> This is the third extension used for the call upon the selection by the customer of the Third Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played.
+
 
 	<?
 	}
@@ -7091,7 +7141,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call,survey_third_digit,survey_fourth_digit,survey_third_audio_file,survey_fourth_audio_file,survey_third_status,survey_fourth_status,survey_third_exten,survey_fourth_exten from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -9759,7 +9809,7 @@ if ($ADD=='40A')
 		{
 		echo "<br><B>SURVEY SETTINGS MODIFIED: $campaign_id</B>\n";
 
-		$stmt="UPDATE vicidial_campaigns SET survey_first_audio_file='$survey_first_audio_file',survey_dtmf_digits='$survey_dtmf_digits',survey_ni_digit='$survey_ni_digit',survey_opt_in_audio_file='$survey_opt_in_audio_file',survey_ni_audio_file='$survey_ni_audio_file',survey_method='$survey_method',survey_no_response_action='$survey_no_response_action',survey_ni_status='$survey_ni_status',survey_response_digit_map='$survey_response_digit_map',survey_xfer_exten='$survey_xfer_exten',survey_camp_record_dir='$survey_camp_record_dir',voicemail_ext='$voicemail_ext' where campaign_id='$campaign_id';";
+		$stmt="UPDATE vicidial_campaigns SET survey_first_audio_file='$survey_first_audio_file',survey_dtmf_digits='$survey_dtmf_digits',survey_ni_digit='$survey_ni_digit',survey_opt_in_audio_file='$survey_opt_in_audio_file',survey_ni_audio_file='$survey_ni_audio_file',survey_method='$survey_method',survey_no_response_action='$survey_no_response_action',survey_ni_status='$survey_ni_status',survey_response_digit_map='$survey_response_digit_map',survey_xfer_exten='$survey_xfer_exten',survey_camp_record_dir='$survey_camp_record_dir',voicemail_ext='$voicemail_ext',survey_third_digit='$survey_third_digit',survey_fourth_digit='$survey_fourth_digit',survey_third_audio_file='$survey_third_audio_file',survey_fourth_audio_file='$survey_fourth_audio_file',survey_third_status='$survey_third_status',survey_fourth_status='$survey_fourth_status',survey_third_exten='$survey_third_exten',survey_fourth_exten='$survey_fourth_exten' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG INSERTION Admin Log Table ###
@@ -13264,6 +13314,14 @@ if ($ADD==31)
 		$default_group_alias = $row[105];
 		$vtiger_search_dead = $row[106];
 		$vtiger_status_call = $row[107];
+		$survey_third_digit = $row[108];
+		$survey_third_audio_file = $row[109];
+		$survey_third_status = $row[110];
+		$survey_third_exten = $row[111];
+		$survey_fourth_digit = $row[112];
+		$survey_fourth_audio_file = $row[113];
+		$survey_fourth_status = $row[114];
+		$survey_fourth_exten = $row[115];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -14354,6 +14412,17 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Method: </td><td><select size=1 name=survey_method><option>AGENT_XFER</option><option>VOICEMAIL</option><option>EXTENSION</option><option>HANGUP</option><option>CAMPREC_60_WAV</option><option SELECTED>$survey_method</option></select> $NWB#vicidial_campaigns-survey_method$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey No-Response Action: </td><td><select size=1 name=survey_no_response_action><option>OPTIN</option><option>OPTOUT</option><option SELECTED>$survey_no_response_action</option></select> $NWB#vicidial_campaigns-survey_no_response_action$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Not Interested Status: </td><td><select name=survey_ni_status>$survey_ni_status_list</select> $NWB#vicidial_campaigns-survey_ni_status$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Third Digit: </td><td><input type=text size=5 maxlength=1 name=survey_third_digit value=\"$survey_third_digit\"> $NWB#vicidial_campaigns-survey_third_digit$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Third Audio File: </td><td><input type=text size=50 maxlength=50 name=survey_third_audio_file value=\"$survey_third_audio_file\"> $NWB#vicidial_campaigns-survey_third_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Third Status: </td><td><input type=text size=10 maxlength=6 name=survey_third_status value=\"$survey_third_status\"> $NWB#vicidial_campaigns-survey_third_status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Third Extension: </td><td><input type=text size=20 maxlength=20 name=survey_third_exten value=\"$survey_third_exten\"> $NWB#vicidial_campaigns-survey_third_exten$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Fourth Digit: </td><td><input type=text size=5 maxlength=1 name=survey_fourth_digit value=\"$survey_fourth_digit\"> $NWB#vicidial_campaigns-survey_fourth_digit$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Fourth Audio File: </td><td><input type=text size=50 maxlength=50 name=survey_fourth_audio_file value=\"$survey_fourth_audio_file\"> $NWB#vicidial_campaigns-survey_fourth_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Fourth Status: </td><td><input type=text size=10 maxlength=6 name=survey_fourth_status value=\"$survey_fourth_status\"> $NWB#vicidial_campaigns-survey_fourth_status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Fourth Extension: </td><td><input type=text size=20 maxlength=20 name=survey_fourth_exten value=\"$survey_fourth_exten\"> $NWB#vicidial_campaigns-survey_fourth_exten$NWE</td></tr>\n";
+
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Response Digit Map: </td><td><input type=text size=70 maxlength=100 name=survey_response_digit_map value=\"$survey_response_digit_map\"> $NWB#vicidial_campaigns-survey_response_digit_map$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Survey Xfer Extension: </td><td><input type=text size=12 maxlength=20 name=survey_xfer_exten value=\"$survey_xfer_exten\"> $NWB#vicidial_campaigns-survey_xfer_exten$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Campaign Recording Directory: </td><td><input type=text size=70 maxlength=255 name=survey_camp_record_dir value=\"$survey_camp_record_dir\"> $NWB#vicidial_campaigns-survey_camp_record_dir$NWE</td></tr>\n";

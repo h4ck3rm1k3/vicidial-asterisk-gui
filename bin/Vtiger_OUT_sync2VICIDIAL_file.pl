@@ -14,6 +14,7 @@
 # 90401-1347 - Fixed quiet flag
 # 90417-0519 - Added custom field updates for timezone and last/largest sale amounts
 # 90423-0453 - Added calls file and hours file reports
+# 90424-1157 - Added orders file report
 #
 
 $secX = time();
@@ -122,6 +123,7 @@ if (length($ARGV[0])>1)
 		print "  [--vt-sales-update] = updates the Vtiger account custom sales fields based upon today sales order data\n";
 		print "  [--vt-sales-update-alldate] = updates the Vtiger account custom sales fields based upon all sales order data\n";
 		print "  [--vt-timezone-update] = updates the Vtiger account custom timezone field based upon ViciDial timezone/state\n";
+		print "  [--vt-territory-update] = updates the Vtiger account tickersymbol field based upon ViciDial user territory\n";
 		print " report generation options:\n";
 		print "  [--report-call-file] = generates a spec call file from vicidial records\n";
 		print "  [--report-hours-file] = generates a spec agent hours file from vicidial records\n";
@@ -211,6 +213,11 @@ if (length($ARGV[0])>1)
 			{
 			$vt_timezone_update=1;
 			if ($q < 1) {print "\n----- VTIGER TIMEZONE FIELD UPDATE -----\n\n";}
+			}
+		if ($args =~ /-vt-territory-update/i)
+			{
+			$vt_territory_update=1;
+			if ($q < 1) {print "\n----- VTIGER USER TERRITORY UPDATE -----\n\n";}
 			}
 		if ($args =~ /--report-call-file/i)
 			{
@@ -352,6 +359,7 @@ $g=0;	### number of leads with multi-alt-entries
 $h=0;	### number of timezone updates
 $j=0;	### number of saleamount updates
 $m=0;	### number of exported records to file
+$n=0;	### number of territory updates
 
 
 ### open the output file for writing ###
@@ -373,6 +381,9 @@ if ($report_orders_file > 0)
 	open(OFout, ">$VTofWEBfile")
 			|| die "Can't open $VTofWEBfile: $!\n";
 	}
+
+
+
 ##### BEGIN REPORT HOURS FILE #####
 if ($report_hours_file > 0) 
 	{
@@ -439,7 +450,7 @@ if ($report_hours_file > 0)
 				if ($DB) {print "printing $last_user|$Lrep\n";}
 
 				if ($w > 0)
-					{print HFout "$Lrep,$TODAY,4,15,$L_ob_talk,$L_ib_talk,$L_acw,$L_onhook,$L_train,$L_break,$L_wait\n";}
+					{print HFout "$last_user,$TODAY,4,15,$L_ob_talk,$L_ib_talk,$L_acw,$L_onhook,$L_train,$L_break,$L_wait\n";}
 				$last_user = $user[$w];
 				$Lrep=$rep[$w];
 				$L_ob_talk=0;
@@ -676,6 +687,79 @@ while ($sthBrowsC > $i)
 
 
 
+	##### BEGIN USER TERRITORY UPDATE #####
+	if ($vt_territory_update > 0)
+		{
+		$stmtB="SELECT tickersymbol from vtiger_account where accountid='$crmid[$i]';";
+			if($DBX){print STDERR "\n|$stmtB|\n";}
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$territory =		$aryB[0];
+			}
+		$sthB->finish();
+
+		if (length($territory)>0)
+			{
+			$VL_exists=0;
+			$stmtA = "SELECT count(*) FROM vicidial_users where user_code='$territory';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VL_exists = 		"$aryA[0]";
+				}
+			$sthA->finish();
+
+			if ($VL_exists > 0)
+				{
+				$user='';
+				$stmtA = "SELECT user FROM vicidial_users where user_code='$territory';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$user = 		"$aryA[0]";
+					}
+				$sthA->finish();
+
+				if (length($territory)>0)
+					{
+					$user_id='';
+					$stmtB="SELECT id from vtiger_users where user_name='$user';";
+						if($DBX){print STDERR "\n|$stmtB|\n";}
+					$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+					$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+					$sthBrows=$sthB->rows;
+					if ($sthBrows > 0)
+						{
+						@aryB = $sthB->fetchrow_array;
+						$user_id =	$aryB[0];
+						}
+					$sthB->finish();
+
+					if (length($user_id)>0)
+						{
+						$stmtB = "UPDATE vtiger_crmentity SET smownerid='$user_id' where accountid='$crmid[$i]';";
+							if ($T < 1) {$affected_rowsB = $dbhB->do($stmtB)    or die  "Couldn't execute query: |$stmtB|\n";}
+							if($DB){print "|$affected_rowsB|$stmtB|\n";}
+						$n++;
+						}
+					}
+				}
+			}
+		}
+	##### END USER TERRITORY UPDATE #####
+
+
+
 	##### BEGIN SALE AMOUNT UPDATE #####
 	if ( ( ($vt_sales_update > 0) || ($vt_sales_update_alldate > 0) ) && ( ($vt_last_saleamount_field_exists > 0) && ($vt_largest_saleamount_field_exists > 0) ) )
 		{
@@ -752,9 +836,9 @@ while ($sthBrowsC > $i)
 				{
 				@aryB = $sthB->fetchrow_array;
 				$website =			$aryB[0];
-				@webARY =			split(/-/,$website);
-				$account =			$webARY[0];
-				$sequence =			$webARY[1];
+					@webARY =			split(/-/,$website);
+					$account =			$webARY[0];
+					$sequence =			$webARY[1];
 				$territory =		$aryB[1];
 				$business_line =	$aryB[2];
 				}
@@ -830,7 +914,7 @@ while ($sthBrowsC > $i)
 					if ($call_type =~ /AUTO/) {$ct='3';}
 					else {$ct='2';}
 
-					print CFout "$transaction,15,$rep,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,$ct\n";
+					print CFout "$transaction,15,$user,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,$ct\n";
 					$m++;
 					$w++;
 					}
@@ -856,7 +940,7 @@ while ($sthBrowsC > $i)
 					$call_date = 		"$aryA[6]";
 					$call_type = 		"$aryA[7]";
 
-					print CFout "$transaction,15,$rep,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,1\n";
+					print CFout "$transaction,15,$user,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,1\n";
 					$m++;
 					$w++;
 					}
@@ -872,6 +956,89 @@ while ($sthBrowsC > $i)
 	##### BEGIN REPORT ORDERS FILE #####
 	if ($report_orders_file > 0)
 		{
+		$VS_exists=0;
+		$stmtB="SELECT count(*) from vtiger_salesorder where accountid='$crmid[$i]' and duedate > \"$TODAY 00:00:00\" order by duedate;";
+			if($DBX){print STDERR "\n|$stmtB|\n";}
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$VS_exists =		$aryB[0];
+			}
+		$sthB->finish();
+
+		if ($VS_exists > 0)
+			{
+			$stmtB="SELECT website,phone,accountname,ownership,siccode from vtiger_account where accountid='$crmid[$i]';";
+				if($DBX){print STDERR "\n|$stmtB|\n";}
+			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+			$sthBrows=$sthB->rows;
+			if ($sthBrows > 0)
+				{
+				@aryB = $sthB->fetchrow_array;
+				$website =			$aryB[0];
+					@webARY =			split(/-/,$website);
+					$account =			$webARY[0];
+					$sequence =			$webARY[1];
+				$phone =			$aryB[1];
+				$company =			$aryB[2];
+				$ownership =		$aryB[3];
+					@ownARY =			split(/ /,$ownership);
+					$first_name =			$ownARY[0];
+					$last_name =			$ownARY[1];
+				$VCstatus =			$aryB[4];
+				}
+			$sthB->finish();
+
+			$stmtA = "SELECT status FROM vicidial_statuses where status_name='$VCstatus';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCstatus = 	"$aryA[0]";
+				$sthA->finish();
+				}
+			else
+				{
+				$sthA->finish();
+				$stmtA = "SELECT status FROM vicidial_campaign_statuses where status_name='$VCstatus';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCstatus = 	"$aryA[0]";
+					$sthA->finish();
+					}
+				}
+			$sthA->finish();
+
+			$k=0;
+			$stmtB="SELECT salesorderid,total,duedate from vtiger_salesorder where accountid='$crmid[$i]' and duedate > \"$TODAY 00:00:00\" order by duedate;";
+				if($DBX){print STDERR "\n|$stmtB|\n";}
+			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+			$sthBrows=$sthB->rows;
+			while ($sthBrows > $k)
+				{
+				@aryB = $sthB->fetchrow_array;
+				$salesorderid = $aryB[0];
+				$total =		$aryB[1];
+					chop($total);
+				$duedate =		$aryB[2];
+
+				print OFout "$salesorderid,$phone,$account,$sequence,$company,$first_name,$last_name,$VCstatus,$duedate,$total\n";
+				$m++;
+				$k++;
+				}
+			$sthB->finish();
+			}
 
 
 		}
@@ -1023,6 +1190,7 @@ while ($sthBrowsC > $i)
 		{$Falert .= "PHONE DUPLICATES:   $f\n";}
 	$Falert .= "TIMEZONE UPDATES:   $h\n";
 	$Falert .= "SALE AMOUNT UPDATES:$j\n";
+	$Falert .= "TERRITORY UPDATES:  $n\n";
 	$Falert .= "REPORT RECORDS:     $m\n";
 
 	if ($q < 1) {print "$Falert";}

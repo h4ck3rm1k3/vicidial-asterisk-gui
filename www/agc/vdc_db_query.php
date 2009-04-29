@@ -3548,7 +3548,7 @@ if ($ACTION == 'updateDISPO')
 					$status_name =		$row[0];
 					}
 				}
-			if (strlen($dispo_choice) < 1) {$status_name = $dispo_chioce;}
+			if (strlen($status_name) < 1) {$status_name = $dispo_chioce;}
 
 			### connect to your vtiger database
 			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");

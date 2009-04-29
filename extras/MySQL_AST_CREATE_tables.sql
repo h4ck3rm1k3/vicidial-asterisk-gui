@@ -634,7 +634,15 @@ cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED',
 agent_allow_group_alias ENUM('Y','N') default 'N',
 default_group_alias VARCHAR(30) default '',
 vtiger_search_dead ENUM('DISABLED','ASK','RESURRECT') default 'ASK',
-vtiger_status_call ENUM('Y','N') default 'N'
+vtiger_status_call ENUM('Y','N') default 'N',
+survey_third_digit VARCHAR(1) default '',
+survey_third_audio_file VARCHAR(50) default 'US_thanks_no_contact',
+survey_third_status VARCHAR(6) default 'NI',
+survey_third_exten VARCHAR(20) default '8300',
+survey_fourth_digit VARCHAR(1) default '',
+survey_fourth_audio_file VARCHAR(50) default 'US_thanks_no_contact',
+survey_fourth_status VARCHAR(6) default 'NI',
+survey_fourth_exten VARCHAR(20) default '8300'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1085,7 +1093,8 @@ vtiger_pass VARCHAR(50),
 vtiger_url VARCHAR(255),
 qc_features_active ENUM('1','0') default '0',
 outbound_autodial_active ENUM('1','0') default '1',
-outbound_calls_per_second SMALLINT(3) UNSIGNED default '40'
+outbound_calls_per_second SMALLINT(3) UNSIGNED default '40',
+enable_tts_integration ENUM('0','1') default '0'
 );
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -1455,6 +1464,12 @@ index (user),
 index (call_date)
 );
 
+CREATE TABLE vicidial_tts_prompts (
+tts_id VARCHAR(50) PRIMARY KEY NOT NULL,
+tts_name VARCHAR(100),
+active ENUM('Y','N'),
+tts_text TEXT
+);
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1551,7 +1566,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1138';
+UPDATE system_settings SET db_schema_version='1139';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

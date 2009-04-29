@@ -17,6 +17,20 @@ There are also 5 additional settings that will define the kind of status: sale, 
 If the customer is on hold and hears this estimated hold time message, the minimum time that will be played is 15 seconds||
 Email, User Code and Territory||
 These are optional fields||
+All options except for the Not Interested, Third and Fourth digit options will move on to the Survey Method call path||
+Survey Third Digit||
+This allows for a third call path if the Third digit as defined in this field is pressed by the customer||
+Survey Fourth Digit||
+This allows for a fourth call path if the Fourth digit as defined in this field is pressed by the customer||
+Survey Third Audio File||
+Survey Fourth Audio File||
+This is the third audio file to be played upon the selection by the customer of the Third Digit option||
+Survey Third Status||
+Survey Fourth Status||
+This is the third status used for the call upon the selection by the customer of the Third Digit option||
+Survey Third Extension||
+Survey Fourth Extension||
+This is the third extension used for the call upon the selection by the customer of the Third Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played||
 
 
 ############################################################ CLIENT

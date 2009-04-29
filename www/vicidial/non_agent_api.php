@@ -19,10 +19,11 @@
 # 80909-2012 - Added support for campaign-specific DNC lists
 # 80910-0020 - Added support for multi-alt-phones, added version function
 # 90118-1056 - Added logging of API functions
+# 90428-0209 - Added blind_monitor function
 #
 
-$version = '2.0.5-5';
-$build = '90118-1056';
+$version = '2.2.0-6';
+$build = '90428-0209';
 
 require("dbconnect.php");
 
@@ -99,7 +100,14 @@ if (isset($_GET["multi_alt_phones"]))			{$multi_alt_phones=$_GET["multi_alt_phon
 	elseif (isset($_POST["multi_alt_phones"]))	{$multi_alt_phones=$_POST["multi_alt_phones"];}
 if (isset($_GET["source"]))						{$source=$_GET["source"];}
 	elseif (isset($_POST["source"]))			{$source=$_POST["source"];}
-
+if (isset($_GET["phone_login"]))				{$phone_login=$_GET["phone_login"];}
+	elseif (isset($_POST["phone_login"]))		{$phone_login=$_POST["phone_login"];}
+if (isset($_GET["session_id"]))					{$session_id=$_GET["session_id"];}
+	elseif (isset($_POST["session_id"]))		{$session_id=$_POST["session_id"];}
+if (isset($_GET["server_ip"]))					{$server_ip=$_GET["server_ip"];}
+	elseif (isset($_POST["server_ip"]))			{$server_ip=$_POST["server_ip"];}
+if (isset($_GET["stage"]))						{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))				{$stage=$_POST["stage"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -174,6 +182,10 @@ if ($non_latin < 1)
 	$multi_alt_phones = ereg_replace("[^- \+\!\:\_0-9a-zA-Z]","",$multi_alt_phones);
 		$multi_alt_phones = ereg_replace("\+"," ",$multi_alt_phones);
 	$source = ereg_replace("[^0-9a-zA-Z]","",$source);
+	$phone_login = ereg_replace("[^0-9a-zA-Z]","",$phone_login);
+	$session_id = ereg_replace("[^0-9]","",$session_id);
+	$server_ip = ereg_replace("[^\.0-9]","",$server_ip);
+	$stage = ereg_replace("[^A-Z]","",$stage);
 	}
 
 if (strlen($list_id)<1) {$list_id='999';}
@@ -254,6 +266,126 @@ if ($function == 'version')
 
 
 ################################################################################
+### blind_monitor - sends call to phone from session from listening
+################################################################################
+if ($function == 'blind_monitor')
+	{
+	if(strlen($source)<2)
+		{
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
+		exit;
+		}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and vdc_agent_api_access='1' and user_level > 6;";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$allowed_user=$row[0];
+		if ($allowed_user < 1)
+			{
+			$result = 'ERROR';
+			$result_reason = "blind_monitor USER DOES NOT HAVE PERMISSION TO BLIND MONITOR";
+			echo "$result: $result_reason: |$user|$allowed_user|\n";
+			$data = "$allowed_user";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+			exit;
+			}
+		else
+			{
+			$stmt="SELECT count(*) from vicidial_conferences where conf_exten='$session_id' and server_ip='$server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$session_exists=$row[0];
+
+			if ($session_exists < 1)
+				{
+				$result = 'ERROR';
+				$result_reason = "blind_monitor INVALID SESSION ID";
+				echo "$result: $result_reason - $session_id|$server_ip|$user\n";
+				$data = "$session_id";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
+				}
+			else
+				{
+				$stmt="SELECT count(*) from phones where login='$phone_login';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$phone_exists=$row[0];
+
+				if ($phone_exists < 1)
+					{
+					$result = 'ERROR';
+					$result_reason = "blind_monitor INVALID PHONE LOGIN";
+					echo "$result: $result_reason - $phone_login|$user\n";
+					$data = "$phone_login";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					exit;
+					}
+				else
+					{
+					$stmt="SELECT dialplan_number,server_ip,outbound_cid from phones where login='$phone_login';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					$dialplan_number =	$row[0];
+					$monitor_server_ip =$row[1];
+					$outbound_cid =		$row[2];
+
+					$S='*';
+					$D_s_ip = explode('.', $server_ip);
+					if (strlen($D_s_ip[0])<2) {$D_s_ip[0] = "0$D_s_ip[0]";}
+					if (strlen($D_s_ip[0])<3) {$D_s_ip[0] = "0$D_s_ip[0]";}
+					if (strlen($D_s_ip[1])<2) {$D_s_ip[1] = "0$D_s_ip[1]";}
+					if (strlen($D_s_ip[1])<3) {$D_s_ip[1] = "0$D_s_ip[1]";}
+					if (strlen($D_s_ip[2])<2) {$D_s_ip[2] = "0$D_s_ip[2]";}
+					if (strlen($D_s_ip[2])<3) {$D_s_ip[2] = "0$D_s_ip[2]";}
+					if (strlen($D_s_ip[3])<2) {$D_s_ip[3] = "0$D_s_ip[3]";}
+					if (strlen($D_s_ip[3])<3) {$D_s_ip[3] = "0$D_s_ip[3]";}
+					$monitor_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S";
+
+					$PADuser = sprintf("%08s", $user);
+						while (strlen($PADuser) > 8) {$PADuser = substr("$PADuser", 0, -1);}
+					$BMquery = "BM$StarTtime$PADuser";
+
+					if ( (ereg('MONITOR',$stage)) or (strlen($stage)<1) ) {$stage = '0';}
+					if (ereg('BARGE',$stage)) {$stage = '';}
+					if (ereg('HIJACK',$stage)) {$stage = '';}
+
+					### insert a new lead in the system with this phone number
+					$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$monitor_server_ip','','Originate','$BMquery','Channel: Local/$monitor_dialstring$stage$session_id@default','Context; default','Exten: $dialplan_number','Priority: 1','Callerid: \"VC Blind Monitor\" <$outbound_cid>','','','','','');";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $link);
+					$affected_rows = mysql_affected_rows($link);
+					if ($affected_rows > 0)
+						{
+						$man_id = mysql_insert_id($link);
+
+						$result = 'SUCCESS';
+						$result_reason = "blind_monitor HAS BEEN LAUNCHED";
+						echo "$result: $result_reason - $phone_login|$monitor_dialstring$stage$session_id|$dialplan_number|$session_id|$man_id|$user\n";
+						$data = "$phone_login|$monitor_dialstring|$session_id|$man_id";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}
+					}
+				}
+			}
+		}
+	exit;
+	}
+
+
+
+
+
+################################################################################
 ### add_lead - inserts a lead into the vicidial_list table
 ################################################################################
 if ($function == 'add_lead')
@@ -269,7 +401,7 @@ if ($function == 'add_lead')
 		}
 	else
 		{
-		$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and vdc_agent_api_access='1' and modify_leads='1';";
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and vdc_agent_api_access='1' and modify_leads='1' and user_level > 7;";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
