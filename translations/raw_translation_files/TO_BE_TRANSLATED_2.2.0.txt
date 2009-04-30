@@ -31,6 +31,10 @@ This is the third status used for the call upon the selection by the customer of
 Survey Third Extension||
 Survey Fourth Extension||
 This is the third extension used for the call upon the selection by the customer of the Third Digit option. Default is 8300 which immediately hangs up the call after the Audio File message is played||
+RANDOM: Randomly grabs lead within the statuses and lists defined||
+UP LAST CALL TIME: Sorts by the newest local call time for the leads||
+DOWN LAST CALL TIME: Sorts by the oldest local call time for the leads||
+WARNING, we only recommend List Mix for advanced users, Please read the ViciDial Manager Manual||
 
 
 ############################################################ CLIENT

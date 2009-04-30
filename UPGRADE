@@ -25,6 +25,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 4. Outbound Survey option for using Cepstral Text-to-speech. Requires some
 	manual configuration and tweaking of TTS scripts.
 
+5. Added RANDOM and LAST CALL TIME lead order options to campaigns
 
 
 

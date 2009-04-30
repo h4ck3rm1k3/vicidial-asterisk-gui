@@ -1706,11 +1706,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90417-0211 - Fixed filter and script slashes issues
 # 90422-0613 - Added user_code, territory and email to vicidial_users
 # 90429-0542 - Added 3rd&4th options to SURVEY campaigns
+# 90430-0154 - Added RANDOM and LAST CALL TIME options to lead order for campaigns
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-180';
-$build = '90429-0542';
+$admin_version = '2.2.0-181';
+$build = '90430-0154';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3031,6 +3032,9 @@ if ($SSoutbound_autodial_active > 0)
 	 <BR> &nbsp; - DOWN COUNT 2nd NEW: starts with least called leads and works its way up inserting a NEW lead in every other lead - Must NOT have NEW selected in the dial statuses
 	 <BR> &nbsp; - DOWN COUNT 3nd NEW: starts with least called leads and works its way up inserting a NEW lead in every third lead - Must NOT have NEW selected in the dial statuses
 	 <BR> &nbsp; - DOWN COUNT 4th NEW: starts with least called leads and works its way up inserting a NEW lead in every forth lead - Must NOT have NEW selected in the dial statuses
+	 <BR> &nbsp; - RANDOM: Randomly grabs lead within the statuses and lists defined
+	 <BR> &nbsp; - UP LAST CALL TIME: Sorts by the newest local call time for the leads
+	 <BR> &nbsp; - DOWN LAST CALL TIME: Sorts by the oldest local call time for the leads
 
 	<BR>
 	<A NAME="vicidial_campaigns-hopper_level">
@@ -13590,7 +13594,74 @@ if ($ADD==31)
 			echo "</select> &nbsp; \n";
 			echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order>
+			<option>DOWN</option>
+			<option>UP</option>
+			<option>DOWN PHONE</option>
+			<option>UP PHONE</option>
+			<option>DOWN LAST NAME</option>
+			<option>UP LAST NAME</option>
+			<option>DOWN COUNT</option>
+			<option>UP COUNT</option>
+			<option>RANDOM</option>
+			<option>DOWN LAST CALL TIME</option>
+			<option>UP LAST CALL TIME</option>
+			<option>DOWN 2nd NEW</option>
+			<option>DOWN 3rd NEW</option>
+			<option>DOWN 4th NEW</option>
+			<option>DOWN 5th NEW</option>
+			<option>DOWN 6th NEW</option>
+			<option>UP 2nd NEW</option>
+			<option>UP 3rd NEW</option>
+			<option>UP 4th NEW</option>
+			<option>UP 5th NEW</option>
+			<option>UP 6th NEW</option>
+			<option>DOWN PHONE 2nd NEW</option>
+			<option>DOWN PHONE 3rd NEW</option>
+			<option>DOWN PHONE 4th NEW</option>
+			<option>DOWN PHONE 5th NEW</option>
+			<option>DOWN PHONE 6th NEW</option>
+			<option>UP PHONE 2nd NEW</option>
+			<option>UP PHONE 3rd NEW</option>
+			<option>UP PHONE 4th NEW</option>
+			<option>UP PHONE 5th NEW</option>
+			<option>UP PHONE 6th NEW</option>
+			<option>DOWN LAST NAME 2nd NEW</option>
+			<option>DOWN LAST NAME 3rd NEW</option>
+			<option>DOWN LAST NAME 4th NEW</option>
+			<option>DOWN LAST NAME 5th NEW</option>
+			<option>DOWN LAST NAME 6th NEW</option>
+			<option>UP LAST NAME 2nd NEW</option>
+			<option>UP LAST NAME 3rd NEW</option>
+			<option>UP LAST NAME 4th NEW</option>
+			<option>UP LAST NAME 5th NEW</option>
+			<option>UP LAST NAME 6th NEW</option>
+			<option>DOWN COUNT 2nd NEW</option>
+			<option>DOWN COUNT 3rd NEW</option>
+			<option>DOWN COUNT 4th NEW</option>
+			<option>DOWN COUNT 5th NEW</option>
+			<option>DOWN COUNT 6th NEW</option>
+			<option>UP COUNT 2nd NEW</option>
+			<option>UP COUNT 3rd NEW</option>
+			<option>UP COUNT 4th NEW</option>
+			<option>UP COUNT 5th NEW</option>
+			<option>UP COUNT 6th NEW</option>
+			<option>RANDOM 2nd NEW</option>
+			<option>RANDOM 3rd NEW</option>
+			<option>RANDOM 4th NEW</option>
+			<option>RANDOM 5th NEW</option>
+			<option>RANDOM 6th NEW</option>
+			<option>DOWN LAST CALL TIME 2nd NEW</option>
+			<option>DOWN LAST CALL TIME 3rd NEW</option>
+			<option>DOWN LAST CALL TIME 4th NEW</option>
+			<option>DOWN LAST CALL TIME 5th NEW</option>
+			<option>DOWN LAST CALL TIME 6th NEW</option>
+			<option>UP LAST CALL TIME 2nd NEW</option>
+			<option>UP LAST CALL TIME 3rd NEW</option>
+			<option>UP LAST CALL TIME 4th NEW</option>
+			<option>UP LAST CALL TIME 5th NEW</option>
+			<option>UP LAST CALL TIME 6th NEW</option>
+			<option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 			echo "$mixes_list";
@@ -14660,7 +14731,74 @@ if ($ADD==34)
 			echo "</select> &nbsp; \n";
 			echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order>
+			<option>DOWN</option>
+			<option>UP</option>
+			<option>DOWN PHONE</option>
+			<option>UP PHONE</option>
+			<option>DOWN LAST NAME</option>
+			<option>UP LAST NAME</option>
+			<option>DOWN COUNT</option>
+			<option>UP COUNT</option>
+			<option>RANDOM</option>
+			<option>DOWN LAST CALL TIME</option>
+			<option>UP LAST CALL TIME</option>
+			<option>DOWN 2nd NEW</option>
+			<option>DOWN 3rd NEW</option>
+			<option>DOWN 4th NEW</option>
+			<option>DOWN 5th NEW</option>
+			<option>DOWN 6th NEW</option>
+			<option>UP 2nd NEW</option>
+			<option>UP 3rd NEW</option>
+			<option>UP 4th NEW</option>
+			<option>UP 5th NEW</option>
+			<option>UP 6th NEW</option>
+			<option>DOWN PHONE 2nd NEW</option>
+			<option>DOWN PHONE 3rd NEW</option>
+			<option>DOWN PHONE 4th NEW</option>
+			<option>DOWN PHONE 5th NEW</option>
+			<option>DOWN PHONE 6th NEW</option>
+			<option>UP PHONE 2nd NEW</option>
+			<option>UP PHONE 3rd NEW</option>
+			<option>UP PHONE 4th NEW</option>
+			<option>UP PHONE 5th NEW</option>
+			<option>UP PHONE 6th NEW</option>
+			<option>DOWN LAST NAME 2nd NEW</option>
+			<option>DOWN LAST NAME 3rd NEW</option>
+			<option>DOWN LAST NAME 4th NEW</option>
+			<option>DOWN LAST NAME 5th NEW</option>
+			<option>DOWN LAST NAME 6th NEW</option>
+			<option>UP LAST NAME 2nd NEW</option>
+			<option>UP LAST NAME 3rd NEW</option>
+			<option>UP LAST NAME 4th NEW</option>
+			<option>UP LAST NAME 5th NEW</option>
+			<option>UP LAST NAME 6th NEW</option>
+			<option>DOWN COUNT 2nd NEW</option>
+			<option>DOWN COUNT 3rd NEW</option>
+			<option>DOWN COUNT 4th NEW</option>
+			<option>DOWN COUNT 5th NEW</option>
+			<option>DOWN COUNT 6th NEW</option>
+			<option>UP COUNT 2nd NEW</option>
+			<option>UP COUNT 3rd NEW</option>
+			<option>UP COUNT 4th NEW</option>
+			<option>UP COUNT 5th NEW</option>
+			<option>UP COUNT 6th NEW</option>
+			<option>RANDOM 2nd NEW</option>
+			<option>RANDOM 3rd NEW</option>
+			<option>RANDOM 4th NEW</option>
+			<option>RANDOM 5th NEW</option>
+			<option>RANDOM 6th NEW</option>
+			<option>DOWN LAST CALL TIME 2nd NEW</option>
+			<option>DOWN LAST CALL TIME 3rd NEW</option>
+			<option>DOWN LAST CALL TIME 4th NEW</option>
+			<option>DOWN LAST CALL TIME 5th NEW</option>
+			<option>DOWN LAST CALL TIME 6th NEW</option>
+			<option>UP LAST CALL TIME 2nd NEW</option>
+			<option>UP LAST CALL TIME 3rd NEW</option>
+			<option>UP LAST CALL TIME 4th NEW</option>
+			<option>UP LAST CALL TIME 5th NEW</option>
+			<option>UP LAST CALL TIME 6th NEW</option>
+			<option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 			echo "$mixes_list";
@@ -14908,7 +15046,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 		echo "<br><br><b>LIST MIXES FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaigns-list_order_mix$NWE</b><br>\n";
 
-		echo "<br><br><b>Experimental Feature in development!!! NON-FUNCTIONAL</b><br>\n";
+		echo "<br><b>WARNING, we only recommend List Mix for advanced users, Please read the ViciDial Manager Manual</b><br>\n";
 
 
 		$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status, vcl_id";

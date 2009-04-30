@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.0.5   *DBI-version*
+# AST_VDhopper.pl version 2.2.0   *DBI-version*
 #
 # DESCRIPTION:
 # uses DBD::MySQL to update the VICIDIAL leads hopper for the streamlined 
@@ -23,7 +23,7 @@
 # a minute, you may want to play with the variables below to streamline for 
 # your usage
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup
@@ -50,6 +50,7 @@
 # 80125-0821 - Added detail logging of each lead inserted
 # 80713-0028 - Changed Recycling methodology
 # 80909-1901 - Added support for campaign-specific DNC lists
+# 90430-0117 - Added last call time and random sorting options
 #
 
 # constants
@@ -1239,6 +1240,9 @@ foreach(@campaign_id)
 			if ($lead_order[$i] =~ /^DOWN PHONE/) {$order_stmt = 'order by phone_number, lead_id asc';}
 			if ($lead_order[$i] =~ /^UP COUNT/) {$order_stmt = 'order by called_count desc, lead_id asc';}
 			if ($lead_order[$i] =~ /^DOWN COUNT/) {$order_stmt = 'order by called_count, lead_id asc';}
+			if ($lead_order[$i] =~ /^UP LAST CALL TIME/) {$order_stmt = 'order by last_local_call_time desc, lead_id asc';}
+			if ($lead_order[$i] =~ /^DOWN LAST CALL TIME/) {$order_stmt = 'order by last_local_call_time, lead_id asc';}
+			if ($lead_order[$i] =~ /^RANDOM/) {$order_stmt = 'order by RAND()';}
 			if ($lead_order[$i] =~ / 2nd NEW$/) {$NEW_count = 2;}
 			if ($lead_order[$i] =~ / 3rd NEW$/) {$NEW_count = 3;}
 			if ($lead_order[$i] =~ / 4th NEW$/) {$NEW_count = 4;}

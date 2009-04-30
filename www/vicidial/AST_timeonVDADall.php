@@ -1303,12 +1303,12 @@ if ($UGdisplay < 1)
 	$HDusergroup =	'';
 	$HTusergroup =	'';
 	}
-if ( ($SIPmonitorLINK<1) and ($IAXmonitorLINK<1) and (strlen($monitor_active)<5) ) 
+if ( ($SIPmonitorLINK<1) and ($IAXmonitorLINK<1) and (!preg_match("/MONITOR|BARGE/",$monitor_active) ) ) 
 	{
 	$HDsessionid =	"-----------+";
 	$HTsessionid =	" SESSIONID |";
 	}
-if ( ($SIPmonitorLINK<2) and ($IAXmonitorLINK<2) and (strlen($monitor_active)>5) ) 
+if ( ($SIPmonitorLINK<2) and ($IAXmonitorLINK<2) and (!preg_match("/BARGE/",$monitor_active) ) ) 
 	{
 	$HDbarge =		'';
 	$HTbarge =		'';
