@@ -9,7 +9,7 @@ This walk through assumes the following things:
 - That you have a Windows system already setup. According to the NetBorder documentation, NetBorder works with Windows XP, Windows 2003 Server, or Windows Vista. We highly recommend installing it on Windows 2003 Server. It is possible, though not confirmed, that it will work on Windows Server 2008.
 - The Windows system is able to ping your carrier and its firewall is configured to allow traffic on the following ports UDP 5060 to 5069 and 10000 to 20000 and TCP 5060 to 5069.
 
-Secton 1. NetBorder Installation.
+Section 1. NetBorder Installation.
 
 Step 1. On the Windows system go to www.sangoma.com.
 Step 2. Go to "Products and Solutions" -> "Software Building Blocks" -> "NetBorder(TM) Suite for Contact Centers" and click on "Call Analyzer Call Progress Analysis"
