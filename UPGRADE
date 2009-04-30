@@ -27,6 +27,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 5. Added RANDOM and LAST CALL TIME lead order options to campaigns
 
+6. Changed List Mix to be active by default, depricated the 
+	AST_VDhopper_MIXtest.pl script, if you use it change it to the
+	AST_VDhopper.pl in your crontab entries
+
+
 
 
 
