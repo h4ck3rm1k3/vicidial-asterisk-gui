@@ -1,4 +1,4 @@
-Configuring Sangoma's NetBorder CPA to work with VICIDIAL.
+Configuring Sangoma's NetBorder CPA(Call Progress Analysis, aka ParaXip) to work with VICIDIAL.
 
 This walk through assumes the following things:
 - That you have a working installation of Vicidial that is able to place outbound calls. VICIbox Server (www.vicibox.com) will set this up for you.
@@ -52,8 +52,8 @@ Section 2. Patching and recompiling Asterisk.
 
 Step 1. On the Linux console of your VICIDIAL system change to the Asterisk source code directory (on a VICIbox Server installation this is located at /usr/src/asterisk-1.2.30.4). The command to do so will look something like this "cd /usr/src/asterisk-1.2.30.4".
 Step 2. Copy the version (1.2 or 1.4) of the paraxip patch that matches the version of Asterisk which is installed on your VICIDIAL system from the extras directory of the VICIDIAL source code (on a VICIbox Server installation this is the 1.2 version and it is located in the /usr/src/astguiclient/extras/ directory) to the asterisk source code directory. The command to do so will look something like this "cp /usr/src/astguiclient/extras/vicidial_paraxip_chan_sip-1.2.patch ." Adjust this command according to the location of your VICIDIAL source code and the version of asterisk that you are using.
-Step 3. Patch the chan_sip.c file in the channels directory. The command to do so will look something like this "patch channels/chan_sip.c -p1 < vicidial_paraxip_chan_sip-1.2.patch". If you are using 1.4 asterisk besure to adjust this command accordingly.
-Step 4. Now it is time to recompile asterisk. If you are using 1.2 Asterisk the command to do so is this "make clean && make all && make install". If you are using 1.4 asterisk the command to do so is this "./configure && make clean && make all && make install". This process will take some time. What ever you do, do not run "make samples" as this will wipe out your existing asterisk configurations.
+Step 3. Patch the chan_sip.c file in the channels directory. The command to do so will look something like this "patch channels/chan_sip.c -p1 < vicidial_paraxip_chan_sip-1.2.patch". If you are using 1.4 asterisk be sure to adjust this command accordingly.
+Step 4. Now it is time to recompile asterisk. If you are using 1.2 Asterisk the command to do so is this "make clean && make all && make install". If you are using 1.4 asterisk the command to do so is this "./configure && make clean && make all && make install". This process will take some time. What ever you do, do NOT run "make samples" as this will wipe out your existing asterisk configurations.
 
 
 Section 3. Configuring your Carrier in VICIDIAL.
@@ -88,4 +88,4 @@ Step 7. Click the windows Start menu and go to the Paraxip NetBorder section and
 Step 8. Got back to the Paraxip NetBorder section of the Start menu and click the "Start Session Controller" shortcut.
 
 
-Congradulations! The free trial of NetBorder CPA Analisys and Vicidial are now successfully integrated. The free trial has a limit of 30 concurrent channel. If you try and dial more than this your calls will fail. Also keep an eye on the CPU load on the windows system. If the load gets higher than 60% Paraxip will not be able to react in time. You might get choppy audio or a higher rate of false positives or false negatives.
+Congratulations! The free trial of NetBorder CPA Analysis and Vicidial are now successfully integrated. The free trial has a limit of 30 concurrent channels. If you try and dial more than this your calls will fail. Also keep an eye on the CPU load on the windows system. If the load gets higher than 60% Paraxip will not be able to react in time. You might get choppy audio or a higher rate of false positives or false negatives.
