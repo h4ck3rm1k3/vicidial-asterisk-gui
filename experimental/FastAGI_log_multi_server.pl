@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
-# FastAGI_log_multi_server.pl version 2.0.5   *DBI-version*
-#
+# FastAGI_logmulti_server.pl version 2.2.0   *DBI-version*
+# 
 # Experimental Deamon using perl Net::Server that runs as FastAGI to reduce load
 # replaces the following AGI scripts:
 # - call_log.agi
@@ -9,37 +9,36 @@
 # - VD_hangup.agi
 #
 # This script needs to be running all of the time for AGI requests to work
-#
+# 
 # You need to put lines similar to those below in your extensions.conf file if the FastAGI is running on the same server as Asterisk:
-#
+# 
 # ;outbound dialing:
-# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+# exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log) 
 #
 # ;inbound calls:
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log)
 #   or
 # exten => 101,1,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
-#
+# 
 # ;all hangups:
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
-#
+# 
 #
 # If the FastAGI server will be handling multiple Asterisk servers you need to put the following in each Asterisk servers extensions.conf,
 # replacing "10.10.10.15" with ip address of the FastAGI server:
 #
 # ;outbound dialing:
-# exten => _91NXXNXXXXXX,1,AGI(agi://10.10.10.15:4577/call_log)
+# exten => _91NXXNXXXXXX,1,AGI(agi://10.10.10.15:4577/call_log) 
 #
 # ;inbound calls:
 # exten => 101,1,AGI(agi://10.10.10.15:4577/call_log)
-#  or
+#   or
 # exten => 101,1,AGI(agi://10.10.10.15:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
-#
-# ;all hangups
+# 
+# ;all hangups:
 # exten => h,1,DeadAGI(agi://10.10.10.15:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 #
-#
-# Copyright (C) 2008  Vicidial Group info@vicidial.com    LICENSE: AGPLv2
+# Copyright (C) 2009  Vicidial Group info@vicidial.com    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 61010-1007 - mattf - First test build
@@ -49,7 +48,16 @@
 # 71030-2039 - mattf - Added priority to hopper insertions
 # 80224-0040 - mattf - Fixed bugs in vicidial_log updates
 # 80430-0907 - mattf - Added term_reason to vicidial_log and vicidial_closer_log
-# 80506-1215 - mikec - Added support for multiserver logging
+# 80507-1138 - mattf - Fixed vicidial_closer_log CALLER hangups
+# 80510-0414 - mattf - Fixed crossover logging bugs
+# 80510-2058 - mattf - Fixed status override bug
+# 80525-1040 - mattf - Added IVR vac status compatibility for inbound calls
+# 80830-0035 - mattf - Added auto alt dialing for EXTERNAL leads for each lead
+# 80909-0843 - mattf - Added support for campaign-speccific DNC lists
+# 81021-0306 - mattf - Added Local channel logging support and while-to-if changes
+# 81026-1247 - mattf - Changed to allow for better remote agent calling
+# 81029-0522 - mattf - Changed to disallow queue_log logging of IVR calls
+# 90504-1712 - mikec - Added support for multi server logging.
 
 
 # defaults for PreFork
@@ -156,7 +164,7 @@ use Net::Server::PreFork; # any personality will do
 
 sub process_request {
 	my $self = shift;
-
+	
 	$process = 'begin';
 	$script = 'VDfastAGI';
 	########## Get current time, parse configs, get logging preferences ##########
@@ -391,6 +399,8 @@ sub process_request {
 		### call start stage
 		if ($stage =~ /START/)
 			{
+			$channel_group='';
+
 			if ($AGILOG) {$agi_string = "+++++ CALL LOG START : $now_date";   &agi_output;}
 
 			if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
@@ -406,17 +416,45 @@ sub process_request {
 				$sthArows=$sthA->rows;
 				@aryA = $sthA->fetchrow_array;
 				$is_client_phone	 = "$aryA[0]";
-				if ($AGILOG) {$agi_string = "Local Zap phone: $aryA[0]|$channel_line|";   &agi_output;}
 				$sthA->finish();
 
 				if ($is_client_phone < 1)
 					{
 					$channel_group = 'Zap Trunk Line';
-					$number_dialed = $callerid;
+					$number_dialed = $extension;
 					}
+				else
+					{
+					$channel_group = 'Zap Client Phone';
+					}
+				if ($AGILOG) {$agi_string = $channel_group . ": $aryA[0]|$channel_line|";   &agi_output;}
+				}
+			if ($channel =~ /^Local\//)
+				{
+				$channel_line = $channel;
+				$channel_line =~ s/^Local\/|\@.*//gi;
+
+				$stmtA = "SELECT count(*) FROM phones where server_ip='$ast_server_ip' and dialplan_number='$channel_line' and protocol='EXTERNAL';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				@aryA = $sthA->fetchrow_array;
+				$is_client_phone	 = "$aryA[0]";
+				$sthA->finish();
+
+				if ($is_client_phone < 1)
+					{
+					$channel_group = 'Local Channel Line';
+					$number_dialed = $extension;
+					}
+				else
+					{
+					$channel_group = 'EXTERNAL Client Phone';
+					}
+				if ($AGILOG) {$agi_string = $channel_group . ": $aryA[0]|$channel_line|";   &agi_output;}
 				}
 			### This section breaks the outbound dialed number down(or builds it up) to a 10 digit number and gives it a description
-			if ( ($channel =~ /^SIP|^IAX2/) or ($is_client_phone > 0) )
+			if ( ($channel =~ /^SIP|^IAX2/) || ( ($is_client_phone > 0) && (length($channel_group) < 1) ) )
 				{
 				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400 
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl UK';}
@@ -431,9 +469,9 @@ sub process_request {
 				if ( ($extension =~ /^91/) && (length($extension)==12) )
 					{$extension =~ s/^91//gi;	$channel_group = 'Outbound Long Distance';}
 				if ($is_client_phone > 0)
-					{$channel_group = 'Zap Client Phone';}
+					{$channel_group = 'Client Phone';}
 				
-				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\///gi;
+				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\/|Local\///gi;
 
 				$number_dialed = $extension;
 				$extension = $SIP_ext;
@@ -446,7 +484,7 @@ sub process_request {
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 				$rec_count=0;
-				while ($sthArows > $rec_count)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$cmd_line_b	=	"$aryA[0]";
@@ -528,7 +566,7 @@ sub process_request {
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
 			$rec_count=0;
-			while ($sthArows > $rec_count)
+			if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
 				$parked_time	=			"$aryA[0]";
@@ -638,7 +676,7 @@ sub process_request {
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 				 $rec_countCUSTDATA=0;
-				while ($sthArows > $rec_countCUSTDATA)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$VD_lead_id	=		"$aryA[0]";
@@ -684,7 +722,7 @@ sub process_request {
 					$sthA->finish();
 					##### END QUEUEMETRICS LOGGING LOOKUP #####
 					###########################################
-					if ($enable_queuemetrics_logging > 0)
+					if ( ($enable_queuemetrics_logging > 0) && ($VD_status !~ /IVR/) )
 						{
 						$VD_agent='NONE';
 						$secX = time();
@@ -734,18 +772,19 @@ sub process_request {
 					if ($calleridname !~ /^Y\d\d\d\d/)
 						{
 						########## FIND AND UPDATE vicidial_log ##########
-						$stmtA = "SELECT start_epoch,status,user,term_reason FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
+						$stmtA = "SELECT start_epoch,status,user,term_reason,comments FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
-						while ($sthArows > $epc_countCUSTDATA)
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$VD_start_epoch	=	"$aryA[0]";
 							$VD_status =		"$aryA[1]";
 							$VD_user =			"$aryA[2]";
 							$VD_term_reason =	"$aryA[3]";
+							$VD_comments =		"$aryA[4]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -767,14 +806,14 @@ sub process_request {
 						if ($Rsec < 10) {$Rsec = "0$Rsec";}
 							$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds,comments FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
 						 $epc_countCUSTDATA=0;
 						 $VD_closecallid='';
-						while ($sthArows > $epc_countCUSTDATA)
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$VD_start_epoch	=	"$aryA[0]";
@@ -784,6 +823,7 @@ sub process_request {
 							$VD_term_reason =	"$aryA[4]";
 							$VD_length_in_sec =	"$aryA[5]";
 							$VD_queue_seconds =	"$aryA[6]";
+							$VD_comments =		"$aryA[7]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -797,7 +837,7 @@ sub process_request {
 						$VD_seconds = ($now_date_epoch - $VD_start_epoch);
 
 						$SQL_status='';
-						if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) 
+						if ( ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) && ($VD_comments !~ /REMOTE/) )
 							{
 							if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
 								{$VDLSQL_term_reason = "term_reason='ABANDON',";}
@@ -839,15 +879,15 @@ sub process_request {
 							}
 						else
 							{
-							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/) 
+							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/)
 								{$VDCLSQL_update = "term_reason='CALLER',";}
 							else
 								{
-								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
+								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT|AFTERHOURS|HOLDRECALLXFER|HOLDTIME/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
 									{$VDCLSQL_term_reason = "term_reason='ABANDON',";}
 								else
 									{
-									if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/)
+									if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT|AFTERHOURS|HOLDRECALLXFER|HOLDTIME/)
 										{$VDCLSQL_term_reason = "term_reason='CALLER',";}
 									else
 										{$VDCLSQL_term_reason = '';}
@@ -879,7 +919,7 @@ sub process_request {
 					### check to see if campaign has alt_dial enabled
 					$VD_auto_alt_dial = 'NONE';
 					$VD_auto_alt_dial_statuses='';
-					$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses FROM vicidial_campaigns where campaign_id='$VD_campaign_id';";
+					$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses,use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id='$VD_campaign_id';";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -890,13 +930,16 @@ sub process_request {
 						@aryA = $sthA->fetchrow_array;
 						$VD_auto_alt_dial	=			"$aryA[0]";
 						$VD_auto_alt_dial_statuses	=	"$aryA[1]";
+						$VD_use_internal_dnc =			"$aryA[2]";
+						$VD_use_campaign_dnc =			"$aryA[3]";
 						 $epc_countCAMPDATA++;
 						}
 					$sthA->finish();
 					if ($VD_auto_alt_dial_statuses =~ / $VD_status | $VDL_status /)
 						{
-						if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3)/) && ($VD_alt_dial =~ /NONE|MAIN/) )
+						if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3|ALT_AND_EXTENDED)/) && ($VD_alt_dial =~ /NONE|MAIN/) )
 							{
+							$alt_dial_skip=0;
 							$VD_alt_phone='';
 							$stmtA="SELECT alt_phone,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$VD_lead_id';";
 								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -917,13 +960,52 @@ sub process_request {
 							$sthA->finish();
 							if (length($VD_alt_phone)>5)
 								{
-								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='',priority='25';";
-								$affected_rows = $dbhA->do($stmtA);
-								if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+								if ($VD_use_internal_dnc =~ /Y/)
+									{
+									$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_alt_phone';";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									if ($sthArows > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VD_alt_dnc_count =	"$aryA[0]";
+										}
+									$sthA->finish();
+									}
+								else {$VD_alt_dnc_count=0;}
+								if ($VD_use_campaign_dnc =~ /Y/)
+									{
+									$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_alt_phone' and campaign_id='$VD_campaign_id';";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									if ($sthArows > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+										}
+									$sthA->finish();
+									}
+								if ($VD_alt_dnc_count < 1)
+									{
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='',priority='25';";
+									$affected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+									}
+								else
+									{$alt_dial_skip=1;}
 								}
+							else
+								{$alt_dial_skip=1;}
+							if ($alt_dial_skip > 0)
+								{$VD_alt_dial='ALT';}
 							}
 						if ( ( ($VD_auto_alt_dial =~ /(ADDR3_ONLY)/) && ($VD_alt_dial =~ /NONE|MAIN/) ) || ( ($VD_auto_alt_dial =~ /(ALT_AND_ADDR3)/) && ($VD_alt_dial =~ /ALT/) ) )
 							{
+							$addr3_dial_skip=0;
 							$VD_address3='';
 							$stmtA="SELECT address3,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$VD_lead_id';";
 								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -944,9 +1026,148 @@ sub process_request {
 							$sthA->finish();
 							if (length($VD_address3)>5)
 								{
-								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='',priority='20';";
-								$affected_rows = $dbhA->do($stmtA);
-								if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+								if ($VD_use_internal_dnc =~ /Y/)
+									{
+									$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_address3';";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									if ($sthArows > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VD_alt_dnc_count =	"$aryA[0]";
+										}
+									$sthA->finish();
+									}
+								else {$VD_alt_dnc_count=0;}
+								if ($VD_use_campaign_dnc =~ /Y/)
+									{
+									$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_address3' and campaign_id='$VD_campaign_id';";
+										if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+									$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+									$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+									$sthArows=$sthA->rows;
+									if ($sthArows > 0)
+										{
+										@aryA = $sthA->fetchrow_array;
+										$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+										}
+									$sthA->finish();
+									}
+								if ($VD_alt_dnc_count < 1)
+									{
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='',priority='20';";
+									$affected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+									}
+								else
+									{$addr3_dial_skip=1;}
+								}
+							else
+								{$addr3_dial_skip=1;}
+							if ($addr3_dial_skip > 0)
+								{$VD_alt_dial='ADDR3';}
+							}
+						if ( ( ($VD_auto_alt_dial =~ /(EXTENDED_ONLY)/) && ($VD_alt_dial =~ /NONE|MAIN/) ) || ( ($VD_auto_alt_dial =~ /(ALT_AND_EXTENDED)/) && ($VD_alt_dial =~ /ALT/) ) || ( ($VD_auto_alt_dial =~ /ADDR3_AND_EXTENDED|ALT_AND_ADDR3_AND_EXTENDED/) && ($VD_alt_dial =~ /ADDR3/) ) || ( ($VD_auto_alt_dial =~ /(EXTENDED)/) && ($VD_alt_dial =~ /X/) && ($VD_alt_dial !~ /XLAST/) ) )
+							{
+							if ($VD_alt_dial =~ /ADDR3/) {$Xlast=0;}
+							else
+								{$Xlast = $VD_alt_dial;}
+							$Xlast =~ s/\D//gi;
+							if (length($Xlast)<1)
+								{$Xlast=0;}
+							$VD_altdialx='';
+							$stmtA="SELECT gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$VD_lead_id';";
+								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							 $epc_countCAMPDATA=0;
+							while ($sthArows > $epc_countCAMPDATA)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$VD_gmt_offset_now =	"$aryA[1]";
+								$VD_state =				"$aryA[2]";
+								$VD_list_id =			"$aryA[3]";
+								 $epc_countCAMPDATA++;
+								}
+							$sthA->finish();
+							$alt_dial_phones_count=0;
+							$stmtA="SELECT count(*) FROM vicidial_list_alt_phones where lead_id='$VD_lead_id';";
+								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							if ($sthArows > 0)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$alt_dial_phones_count = "$aryA[0]";
+								}
+							$sthA->finish();
+
+							while ( ($alt_dial_phones_count > 0) && ($alt_dial_phones_count > $Xlast) )
+								{
+								$Xlast++;
+								$stmtA="SELECT alt_phone_id,phone_number,active FROM vicidial_list_alt_phones where lead_id='$VD_lead_id' and alt_phone_count='$Xlast';";
+									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								if ($sthArows > 0)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$VD_altdial_id =		"$aryA[0]";
+									$VD_altdial_phone = 	"$aryA[1]";
+									$VD_altdial_active = 	"$aryA[2]";
+									}
+								else
+									{$Xlast=9999999999;}
+								$sthA->finish();
+
+								if ($VD_altdial_active =~ /Y/)
+									{
+									if ($VD_use_internal_dnc =~ /Y/)
+										{
+										$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_altdial_phone';";
+											if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArows=$sthA->rows;
+										if ($sthArows > 0)
+											{
+											@aryA = $sthA->fetchrow_array;
+											$VD_alt_dnc_count =	"$aryA[0]";
+											}
+										$sthA->finish();
+										}
+									else {$VD_alt_dnc_count=0;}
+									if ($VD_use_campaign_dnc =~ /Y/)
+										{
+										$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_altdial_phone' and campaign_id='$VD_campaign_id';";
+											if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArows=$sthA->rows;
+										if ($sthArows > 0)
+											{
+											@aryA = $sthA->fetchrow_array;
+											$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+											}
+										$sthA->finish();
+										}
+									if ($VD_alt_dnc_count < 1)
+										{
+										if ($alt_dial_phones_count eq '$Xlast') 
+											{$Xlast = 'LAST';}
+										$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='X$Xlast',user='',priority='15';";
+										$affected_rows = $dbhA->do($stmtA);
+										if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|X$Xlast|$VD_altdial_id|";   &agi_output;}
+										$Xlast=9999999999;
+										}
+									else
+										{if ($AGILOG) {$agi_string = "--    VDH alt dial is DNC|X$Xlast|$VD_altdial_phone|";   &agi_output;}}
+									}
 								}
 							}
 						}
