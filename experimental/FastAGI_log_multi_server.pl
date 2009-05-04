@@ -72,9 +72,9 @@ $VARfastagi_log_checkforwait =	'60';
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
 
-open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
-@conf = <conf>;
-close(conf);
+open(CONF, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <CONF>;
+close(CONF);
 $i=0;
 foreach(@conf)
 	{
@@ -184,9 +184,9 @@ sub process_request {
 	# default path to astguiclient configuration file:
 	$PATHconf =		'/etc/astguiclient.conf';
 
-	open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
-	@conf = <conf>;
-	close(conf);
+	open(CONF, "$PATHconf") || die "can't open $PATHconf: $!\n";
+	@conf = <CONF>;
+	close(CONF);
 	$i=0;
 	foreach(@conf)
 		{
@@ -609,12 +609,12 @@ sub process_request {
 			if ($DEBUG =~ /^DEBUG$/)
 			{
 				### open the hangup cause out file for writing ###
-				open(out, ">>$PATHlogs/HANGUP_cause-output.txt")
+				open(DEBUGOUT, ">>$PATHlogs/HANGUP_cause-output.txt")
 						|| die "Can't open $PATHlogs/HANGUP_cause-output.txt: $!\n";
 
-				print out "$now_date|$hangup_cause|$dialstatus|$dial_time|$ring_time|$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";
+				print DEBUGOUT "$now_date|$hangup_cause|$dialstatus|$dial_time|$ring_time|$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";
 
-				close(out);
+				close(DEBUGOUT);
 			}
 			else 
 			{
@@ -1228,10 +1228,10 @@ sub agi_output
 if ($AGILOG >=2)
 	{
 	### open the log file for writing ###
-	open(Lout, ">>$AGILOGfile")
+	open(LOGOUT, ">>$AGILOGfile")
 			|| die "Can't open $AGILOGfile: $!\n";
-	print Lout "$now_date|$script|$process|$agi_string\n";
-	close(Lout);
+	print LOGOUT "$now_date|$script|$process|$agi_string\n";
+	close(LOGOUT);
 	}
 	### send to STDERR writing ###
 if ( ($AGILOG == '1') || ($AGILOG == '3') )
