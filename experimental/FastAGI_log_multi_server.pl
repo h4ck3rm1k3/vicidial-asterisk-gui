@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# FastAGI_logmulti_server.pl version 2.2.0   *DBI-version*
+# FastAGI_log_multi_server.pl version 2.2.0   *DBI-version*
 # 
 # Experimental Deamon using perl Net::Server that runs as FastAGI to reduce load
 # replaces the following AGI scripts:
