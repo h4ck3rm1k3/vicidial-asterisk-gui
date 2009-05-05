@@ -60,7 +60,7 @@
 # 90504-1712 - mikec - Added support for multi server logging.
 
 
-# defaults for PreFork
+### defaults for PreFork
 $VARfastagi_log_min_servers =	'3';
 $VARfastagi_log_max_servers =	'16';
 $VARfastagi_log_min_spare_servers = '2';
@@ -69,9 +69,10 @@ $VARfastagi_log_max_requests =	'1000';
 $VARfastagi_log_checkfordead =	'30';
 $VARfastagi_log_checkforwait =	'60';
 
-# default path to astguiclient configuration file:
+### default path to astguiclient configuration file: ###
 $PATHconf =		'/etc/astguiclient.conf';
 
+### open the config file and parse it. ###
 open(CONF, "$PATHconf") || die "can't open $PATHconf: $!\n";
 @conf = <CONF>;
 close(CONF);
@@ -80,34 +81,76 @@ foreach(@conf)
 	{
 	$line = $conf[$i];
 	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
-	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
-		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
-		{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
-		{$VARfastagi_log_max_servers = $line;   $VARfastagi_log_max_servers =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_min_spare_servers/) && ($CLIVARfastagi_log_min_spare_servers < 1) )
-		{$VARfastagi_log_min_spare_servers = $line;   $VARfastagi_log_min_spare_servers =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_max_spare_servers/) && ($CLIVARfastagi_log_max_spare_servers < 1) )
-		{$VARfastagi_log_max_spare_servers = $line;   $VARfastagi_log_max_spare_servers =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_max_requests/) && ($CLIVARfastagi_log_max_requests < 1) )
-		{$VARfastagi_log_max_requests = $line;   $VARfastagi_log_max_requests =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_checkfordead/) && ($CLIVARfastagi_log_checkfordead < 1) )
-		{$VARfastagi_log_checkfordead = $line;   $VARfastagi_log_checkfordead =~ s/.*=//gi;}
-	if ( ($line =~ /^VARfastagi_log_checkforwait/) && ($CLIVARfastagi_log_checkforwait < 1) )
-		{$VARfastagi_log_checkforwait = $line;   $VARfastagi_log_checkforwait =~ s/.*=//gi;}
-	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
-		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
-		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
-		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
-		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
-		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
-		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	if ($line =~ /^PATHlogs/)
+		{
+		$PATHlogs = $line;
+		$PATHlogs =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_min_servers/)
+		{
+		$VARfastagi_log_min_servers = $line;
+		$VARfastagi_log_min_servers =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_max_servers/)
+		{
+		$VARfastagi_log_max_servers = $line;
+		$VARfastagi_log_max_servers =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_min_spare_servers/)
+		{
+		$VARfastagi_log_min_spare_servers = $line;
+		$VARfastagi_log_min_spare_servers =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_max_spare_servers/)
+		{
+		$VARfastagi_log_max_spare_servers = $line;
+		$VARfastagi_log_max_spare_servers =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_max_requests/)
+		{
+		$VARfastagi_log_max_requests = $line;
+		$VARfastagi_log_max_requests =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_checkfordead/)
+		{
+		$VARfastagi_log_checkfordead = $line;
+		$VARfastagi_log_checkfordead =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARfastagi_log_checkforwait/)
+		{
+		$VARfastagi_log_checkforwait = $line;
+		$VARfastagi_log_checkforwait =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARserver_ip/)
+		{
+		$VARserver_ip = $line;
+		$VARserver_ip =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARDB_server/)
+		{
+		$VARDB_server = $line;
+		$VARDB_server =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARDB_database/)
+		{
+		$VARDB_database = $line;
+		$VARDB_database =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARDB_user/)
+		{
+		$VARDB_user = $line;
+		$VARDB_user =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARDB_pass/)
+		{
+		$VARDB_pass = $line;
+		$VARDB_pass =~ s/.*=//gi;
+		}
+	if ($line =~ /^VARDB_port/)
+		{
+		$VARDB_port = $line;
+		$VARDB_port =~ s/.*=//gi;
+		}
 	$i++;
 	}
 
@@ -181,9 +224,10 @@ sub process_request {
 	$now_date = "$year-$mon-$mday $hour:$min:$sec";
 
 
-	# default path to astguiclient configuration file:
+	### default path to astguiclient configuration file: ###
 	$PATHconf =		'/etc/astguiclient.conf';
 
+	### open and parse the config file ###
 	open(CONF, "$PATHconf") || die "can't open $PATHconf: $!\n";
 	@conf = <CONF>;
 	close(CONF);
@@ -192,30 +236,66 @@ sub process_request {
 		{
 		$line = $conf[$i];
 		$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
-		if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
-			{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
-		if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
-			{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
-		if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
-			{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
-		if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
-			{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
-		if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
-			{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
-		if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
-			{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
-		if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
-			{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
-		if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
-			{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
-		if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
-			{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
-		if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
-			{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
-		if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
-			{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
-		if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
-			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+		if ($line =~ /^PATHhome/)
+			{
+			$PATHhome = $line;   
+			$PATHhome =~ s/.*=//gi;
+			}
+		if ($line =~ /^PATHlogs/)
+			{
+			$PATHlogs = $line;   
+			$PATHlogs =~ s/.*=//gi;
+			}
+		if ($line =~ /^PATHagi/)
+			{
+			$PATHagi = $line;   
+			$PATHagi =~ s/.*=//gi;
+			}
+		if ($line =~ /^PATHweb/)
+			{
+			$PATHweb = $line;   
+			$PATHweb =~ s/.*=//gi;
+			}
+		if ($line =~ /^PATHsounds/)
+			{
+			$PATHsounds = $line;   
+			$PATHsounds =~ s/.*=//gi;
+			}
+		if ($line =~ /^PATHmonitor/)
+			{
+			$PATHmonitor = $line;   
+			$PATHmonitor =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARserver_ip/)
+			{
+			$VARserver_ip = $line;   
+			$VARserver_ip =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARDB_server/)
+			{
+			$VARDB_server = $line;   
+			$VARDB_server =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARDB_database/)
+			{
+			$VARDB_database = $line;   
+			$VARDB_database =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARDB_user/)
+			{
+			$VARDB_user = $line;   
+			$VARDB_user =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARDB_pass/)
+			{
+			$VARDB_pass = $line;   
+			$VARDB_pass =~ s/.*=//gi;
+			}
+		if ($line =~ /^VARDB_port/)
+			{
+			$VARDB_port = $line;   
+			$VARDB_port =~ s/.*=//gi;
+			}
 		$i++;
 		}
 
@@ -243,20 +323,20 @@ sub process_request {
 		}
 	$sthA->finish();
 
-	# get the socket connection to the client
+	### get the socket connection to the client ###
 	my $socket = $self->{server}->{client};
 
-	# ask the socket for the clients ip address
+	### ask the socket for the clients ip address ###
 	my $ast_server_ip = $socket->peerhost();
 
-	# if client is connecting from localhost 
-	# use the ip address in the config file
+	### if client is connecting from localhost ###
+	### use the ip address in the config file ###
 	if ( $ast_server_ip eq "127.0.0.1" ) 
 		{
 			$ast_server_ip = $VARserver_ip;
 		}
 
-
+	### start the log if we are logging ###
 	if ($AGILOG) 
 		{
 		$agi_string = "+++++++++++++++++ FastAGI Start ++++++++++++++++++++++++++++++++++++++++"; 
@@ -269,7 +349,7 @@ sub process_request {
 
 	### begin parsing run-time options ###
 	if (length($ARGV[0])>1)
-	{
+		{
 		if ($AGILOG) 
 			{
 			$agi_string = "Perl Environment Dump:"; 
@@ -277,7 +357,7 @@ sub process_request {
 			}
 		$i=0;
 		while ($#ARGV >= $i)
-		{
+			{
 			$args = "$args $ARGV[$i]";
 			if ($AGILOG) 
 				{
@@ -285,23 +365,24 @@ sub process_request {
 				&agi_output;
 				}
 			$i++;
+			}
 		}
-	}
 	$HVcauses=0;
 	$fullCID=0;
 	$callerid='';
 	$calleridname='';
 	$|=1;
-	while(<STDIN>) {
+	while(<STDIN>)
+		{
 		chomp;
 		last unless length($_);
 		if ($AGILOG)
-		{
-			if (/^agi_(\w+)\:\s+(.*)$/)
 			{
+			if (/^agi_(\w+)\:\s+(.*)$/)
+				{
 				$AGI{$1} = $2;
+				}
 			}
-		}
 
 		if (/^agi_uniqueid\:\s+(.*)$/)		{$unique_id = $1; $uniqueid = $unique_id;}
 		if (/^agi_priority\:\s+(.*)$/)		{$priority = $1;}
@@ -337,10 +418,20 @@ sub process_request {
 			if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
 			if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
 			if ( $calleridname =~ /\"/)  {$calleridname =~ s/\"//gi;}
-	#	if ( (length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) ) )
-		if ( ( 
-		(length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) )
-		) or ( (length($calleridname)>17) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ) )
+		if ( 
+		     ( 
+		       (length($calleridname)>5) && 
+		       ( 
+		         (!$callerid) or 
+		         ($callerid =~ /unknown|private|00000000/i) or 
+		         ($callerid =~ /5551212/) 
+		       )
+		      ) or 
+		     ( 
+		       (length($calleridname)>17) && 
+		       ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) 
+		      ) 
+		    )
 			{$callerid = $calleridname;}
 
 			### allow for ANI being sent with the DNIS "*3125551212*9999*"
@@ -363,13 +454,13 @@ sub process_request {
 		}
 
 	foreach $i (sort keys %AGI) 
-	{
+		{
 		if ($AGILOG) 
 			{
 			$agi_string = " -- $i = $AGI{$i}";   
 			&agi_output;
 			}
-	}
+		}
 
 
 	if ($AGILOG) 
@@ -378,7 +469,7 @@ sub process_request {
 		&agi_output;
 		}
 
-	if ( ($extension =~ /h/i) && (length($extension) < 3))  {$stage = 'END';}
+	if ( ($extension =~ /h/i) && (length($extension) < 3) )  {$stage = 'END';}
 	else {$stage = 'START';}
 
 	$process = $request;
@@ -489,8 +580,8 @@ sub process_request {
 					@aryA = $sthA->fetchrow_array;
 					$cmd_line_b	=	"$aryA[0]";
 					$cmd_line_d	=	"$aryA[1]";
-						$cmd_line_b =~ s/Exten: //gi;
-						$cmd_line_d =~ s/Channel: Local\/|@.*//gi;
+					$cmd_line_b =~ s/Exten: //gi;
+					$cmd_line_d =~ s/Channel: Local\/|@.*//gi;
 					$rec_count++;
 					}
 				$sthA->finish();
@@ -637,21 +728,21 @@ sub process_request {
 					if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'DC'; $VDAC_status = 'DISCONNECT';}
 
 					$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
-						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$VDADaffected_rows = $dbhA->do($stmtA);
 					if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$VDADaffected_rows|$CIDlead_id";   &agi_output;}
 
 					$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
-						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$VDACaffected_rows = $dbhA->do($stmtA);
 					if ($AGILOG) {$agi_string = "--    VDAC update: |$VDACaffected_rows|$CIDlead_id";   &agi_output;}
 
-						$Euniqueid=$uniqueid;
-						$Euniqueid =~ s/\.\d+$//gi;
+					$Euniqueid=$uniqueid;
+					$Euniqueid =~ s/\.\d+$//gi;
 					$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$VDL_status' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
-						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$VDLaffected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VDLaffected_rows|$uniqueid|$VDACuniqueid|";   &agi_output;}
+					if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VDLaffected_rows|$uniqueid|$Euniqueid|";   &agi_output;}
 
 					sleep(1);
 
@@ -671,7 +762,7 @@ sub process_request {
 				########## FIND AND DELETE vicidial_auto_calls ##########
 				$VD_alt_dial = 'NONE';
 				$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
-					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
