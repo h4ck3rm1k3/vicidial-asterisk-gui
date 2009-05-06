@@ -6,9 +6,10 @@
 #
 # CHANGES
 #
-# 60814-1658 - Added option to start without logging through servers table setting
-# 90309-0905 - Added deleting of asterisk command files
-# 90325-2238 - Rewrote launching of Asterisk, removed command files
+# 60814-1658 - mattf - Added option to start without logging through servers table setting
+# 90309-0905 - mattf - Added deleting of asterisk command files
+# 90325-2238 - mattf - Rewrote launching of Asterisk, removed command files
+# 90506-1443 - mikec - Added the T option to the asterisk command. This enables timestamping.
 #
 
 # default path to astguiclient configuration file:
@@ -87,7 +88,7 @@ if ($SYSLOG)
 	print "raised ulimit open files\n";
 
 	sleep(1);
-	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvvvvvvvvvvvvvvvvvvgc\015"'`;
+	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvvvvvvvvvvvvvvvvvvgcT\015"'`;
 	print "Asterisk started... screen logging on\n";
 	}
 else
@@ -104,6 +105,6 @@ else
 	print "raised ulimit open files\n";
 
 	sleep(1);
-	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvgc\015"'`;
+	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvgcT\015"'`;
 	print "Asterisk started... screen logging off\n";
 	}
