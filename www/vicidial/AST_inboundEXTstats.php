@@ -1,12 +1,13 @@
-<? 
+<?php 
 # AST_inboundEXTstats.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60421-1450 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60620-1322 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -75,7 +76,7 @@ while ($i < $inbound_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 #echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB\">\n";
 echo "<TITLE>ASTERISK: Inbound Calls Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";

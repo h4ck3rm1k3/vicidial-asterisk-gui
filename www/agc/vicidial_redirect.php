@@ -1,10 +1,11 @@
-<?
+<?php
 # vicidial_redirect.php - forwards agents to another URL for vicidial.php login
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71202-1546 - First Build 
+# 90508-0727 - Changed to PHP long tags
 #
 
 if (isset($_GET["DB"]))						    {$DB=$_GET["DB"];}

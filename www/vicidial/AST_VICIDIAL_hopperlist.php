@@ -1,7 +1,7 @@
-<? 
+<?php 
 # AST_VICIDIAL_hopperlist.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -10,6 +10,7 @@
 # 70115-1614 - Added ALT field for vicidial_hopper alt_dial column
 # 71029-0852 - Added list_id to the output
 # 71030-2118 - Added priority to display
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -73,7 +74,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Hopper List</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";

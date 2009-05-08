@@ -1,4 +1,4 @@
-<?
+<?php
 # list_download.php
 # 
 # downloads the entire contents of a vicidial list ID to a flat text file
@@ -9,6 +9,7 @@
 # CHANGES
 #
 # 90209-1310 - First build
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");

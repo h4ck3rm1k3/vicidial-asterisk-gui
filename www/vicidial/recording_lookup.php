@@ -1,4 +1,4 @@
-<?
+<?php
 ### recording_lookup.php
 #
 #	REQUIRED! - check all paths and directory names, need to create a temp directory
@@ -30,6 +30,7 @@
 # CHANGES
 # 71015-0845 - First build
 # 71112-1347 - added GSM option
+# 90508-0644 - Changed to PHP long tags
 #
 
 $STARTtime = date("U");
@@ -73,7 +74,7 @@ $US='_';
 </head>
 <body bgcolor=white>
 
-<? 
+<?php 
 
 
 echo "<br><br>\n";

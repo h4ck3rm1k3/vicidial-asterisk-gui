@@ -1,4 +1,4 @@
-<?
+<?php
 # vtiger_search.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -847,7 +847,7 @@ echo "<a href=\"$vtiger_url\">Click here to go to the Vtiger home page</a>\n";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

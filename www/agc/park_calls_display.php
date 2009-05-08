@@ -1,7 +1,7 @@
-<?
-# park_calls_display.php    version 2.0.5
+<?php
+# park_calls_display.php    version 2.2.0
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the details on the parked calls on the server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -22,6 +22,7 @@
 # 50711-1208 - removed HTTP authentication in favor of user/pass vars
 # 60421-1111 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1205 - Added variable filters to close security holes for login form
+# 90508-0727 - Changed to PHP long tags
 # 
 
 require("dbconnect.php");

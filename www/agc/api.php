@@ -1,4 +1,4 @@
-<?
+<?php
 # api.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -31,10 +31,11 @@
 # 90128-0229 - Added vendor_id to dial function
 # 90303-0723 - Added group alias and dial prefix
 # 90407-1920 - Added vtiger_callback option for external_dial function
+# 90508-0727 - Changed to PHP long tags
 #
 
-$version = '2.0.5-6';
-$build = '90407-1920';
+$version = '2.2.0-7';
+$build = '90508-0727';
 
 require("dbconnect.php");
 

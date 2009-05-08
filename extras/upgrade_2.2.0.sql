@@ -51,3 +51,32 @@ tts_text TEXT
 
 UPDATE system_settings SET db_schema_version='1139';
 
+CREATE TABLE vicidial_call_menu (
+menu_id VARCHAR(50) PRIMARY KEY NOT NULL,
+menu_name VARCHAR(100),
+menu_prompt VARCHAR(100),
+menu_timeout SMALLINT(2) UNSIGNED default '10',
+menu_timeout_prompt VARCHAR(100) default 'NONE',
+menu_invalid_prompt VARCHAR(100) default 'NONE',
+menu_repeat TINYINT(1) UNSIGNED default '0',
+menu_time_check ENUM('0','1') default '0',
+call_time_id VARCHAR(20) default '',
+track_in_vdac ENUM('0','1') default '1'
+);
+
+CREATE TABLE vicidial_call_menu_options (
+menu_id VARCHAR(50) NOT NULL,
+option_value VARCHAR(20) NOT NULL default '',
+option_description VARCHAR(255) default '',
+option_route VARCHAR(20),
+option_route_value VARCHAR(100),
+option_route_value_context VARCHAR(100),
+index (menu_id),
+unique index menuoption (menu_id, option_value)
+);
+
+ALTER TABLE vicidial_inbound_dids MODIFY did_route ENUM('EXTEN','VOICEMAIL','AGENT','PHONE','IN_GROUP','CALLMENU') default 'EXTEN';
+ALTER TABLE vicidial_inbound_dids ADD menu_id VARCHAR(50) default '';
+
+UPDATE system_settings SET db_schema_version='1140';
+

@@ -1,4 +1,4 @@
-<?
+<?php
 # vdc_db_query.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -197,10 +197,11 @@
 # 90324-1316 - Added functions to log calls to Vtiger accounts and update status to siccode
 # 90327-1348 - Changed Vtiger status populate to use status name
 # 90408-0021 - Added API vtiger specific callback activity record ability
+# 90508-0726 - Changed to PHP long tags
 #
 
-$version = '2.2.0-108';
-$build = '90408-0021';
+$version = '2.2.0-109';
+$build = '90508-0726';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=212;
 $one_mysql_log=0;

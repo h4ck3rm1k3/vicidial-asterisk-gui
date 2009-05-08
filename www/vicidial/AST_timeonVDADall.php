@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_timeonVDADall.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -46,10 +46,11 @@
 # 90202-0108 - Changed options to pop-out frame, added outbound_autodial_active option
 # 90310-0906 - Added admin header
 # 90428-0727 - Changed listen and barge to use the API and manager must enter phone
+# 90508-0623 - Changed to PHP long tags
 #
 
-$version = '2.0.5-37';
-$build = '90428-0727';
+$version = '2.0.5-38';
+$build = '90508-0623';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -358,11 +359,11 @@ $open_list = "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><
 <HEAD>
 
 <script language="Javascript">
-	var select_list = '<? echo $select_list ?>';
-	var open_list = '<? echo $open_list ?>';
-	var monitor_phone = '<? echo $monitor_phone ?>';
-	var user = '<? echo $PHP_AUTH_USER ?>';
-	var pass = '<? echo $PHP_AUTH_PW ?>';
+	var select_list = '<?php echo $select_list ?>';
+	var open_list = '<?php echo $open_list ?>';
+	var monitor_phone = '<?php echo $monitor_phone ?>';
+	var user = '<?php echo $PHP_AUTH_USER ?>';
+	var pass = '<?php echo $PHP_AUTH_PW ?>';
 
 	// functions to hide and show different DIVs
 	function openDiv(divvar) 
@@ -446,7 +447,7 @@ $open_list = "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><
 	.b2 {color: black; background-color: #9999FF}
 	.b3 {color: black; background-color: #6666FF}
 	.b4 {color: white; background-color: #0000FF}
-<?
+<?php
 	$stmt="select group_id,group_color from vicidial_inbound_groups;";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}

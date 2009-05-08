@@ -1,5 +1,5 @@
-<?
-# manager_send.php    version 2.0.5
+<?php
+# manager_send.php    version 2.2.0
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -85,10 +85,11 @@
 # 90303-1144 - Fixed manual dial live hangup bug
 # 90304-1334 - Added account and usegroupalias and user campaign/in-group specific variables
 # 90305-1040 - Added agent_dialed_number and type for user_call_log feature
+# 90508-0727 - Changed to PHP long tags
 #
 
-$version = '2.0.5-38';
-$build = '90305-1040';
+$version = '2.2.0-39';
+$build = '90508-0727';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=83;
 $one_mysql_log=0;

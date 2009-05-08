@@ -1,4 +1,4 @@
-<?
+<?php
 # non_agent_api.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -20,10 +20,11 @@
 # 80910-0020 - Added support for multi-alt-phones, added version function
 # 90118-1056 - Added logging of API functions
 # 90428-0209 - Added blind_monitor function
+# 90508-0642 - Changed to PHP long tags
 #
 
-$version = '2.2.0-6';
-$build = '90428-0209';
+$version = '2.2.0-7';
+$build = '90508-0642';
 
 require("dbconnect.php");
 

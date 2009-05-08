@@ -1,12 +1,13 @@
-<? 
+<?php 
 # AST_agent_time_sheet_archive.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 60619-1721 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -60,7 +61,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Time Sheet</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<a href=\"./admin.php\">VICIDIAL ADMIN</a>: Agent Time Sheet\n";

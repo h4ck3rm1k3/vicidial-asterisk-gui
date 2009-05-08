@@ -1,4 +1,4 @@
-<?
+<?php
 # new_listloader_superL.php
 # 
 # Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -25,11 +25,12 @@
 # 81011-2009 - a few bug fixes
 # 90309-1831 - Added admin_log logging
 # 90310-2128 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.5-29';
-$build = '90310-2128';
+$version = '2.0.5-30';
+$build = '90508-0644';
 
 
 require("dbconnect.php");
@@ -321,7 +322,7 @@ function ParseFileName() {
 </head>
 <BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 
-<?
+<?php
 	$short_header=1;
 
 	require("admin_header.php");
@@ -330,21 +331,21 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 ?>
 
 
-<form action=<?=$PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
-<input type=hidden name='leadfile_name' value="<?=$leadfile_name ?>">
-<? if ($file_layout!="custom") { ?>
+<form action=<?php echo $PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
+<input type=hidden name='leadfile_name' value="<?php echo $leadfile_name ?>">
+<?php if ($file_layout!="custom") { ?>
 <table align=center width="700" border=0 cellpadding=5 cellspacing=0 bgcolor=#D9E6FE>
   <tr>
 	<td align=right width="35%"><B><font face="arial, helvetica" size=2>Load leads from this file:</font></B></td>
-	<td align=left width="65%"><input type=file name="leadfile" value="<?=$leadfile ?>"> <? echo "$NWB#vicidial_list_loader$NWE"; ?></td>
+	<td align=left width="65%"><input type=file name="leadfile" value="<?php echo $leadfile ?>"> <?php echo "$NWB#vicidial_list_loader$NWE"; ?></td>
   </tr>
   <tr>
 	<td align=right width="25%"><font face="arial, helvetica" size=2>List ID Override: </font></td>
-	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$list_id_override ?>" name='list_id_override' size=10 maxlength=8> (numbers only or leave blank for values in the file)</td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?php echo $list_id_override ?>" name='list_id_override' size=10 maxlength=8> (numbers only or leave blank for values in the file)</td>
   </tr>
   <tr>
 	<td align=right width="25%"><font face="arial, helvetica" size=2>Phone Code Override: </font></td>
-	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$phone_code_override ?>" name='phone_code_override' size=8 maxlength=6> (numbers only or leave blank for values in the file)</td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?php echo $phone_code_override ?>" name='phone_code_override' size=8 maxlength=6> (numbers only or leave blank for values in the file)</td>
   </tr>
   <tr>
 	<td align=right><B><font face="arial, helvetica" size=2>File layout to use:</font></B></td>
@@ -366,11 +367,11 @@ echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
 <tr>
 	<td align=center colspan=2><input type=submit value="SUBMIT" name='submit_file'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick="javascript:document.location='new_listloader_superL.php'" value="START OVER" name='reload_page'></td>
   </tr>
-  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent">BACK TO ADMIN</a></font></td><td align=right><font size=1>LIST LOADER- &nbsp; &nbsp; VERSION: <?=$version ?> &nbsp; &nbsp; BUILD: <?=$build ?> &nbsp; &nbsp; </td></tr>
+  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent">BACK TO ADMIN</a></font></td><td align=right><font size=1>LIST LOADER- &nbsp; &nbsp; VERSION: <?php echo $version ?> &nbsp; &nbsp; BUILD: <?php echo $build ?> &nbsp; &nbsp; </td></tr>
 </table>
-<? } ?>
+<?php } ?>
 
-<?
+<?php
 
 	if ($OK_to_process) {
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true;document.forms[0].list_id_override.disabled=true;document.forms[0].phone_code_override.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
@@ -1425,7 +1426,7 @@ if ($leadfile) {
 
 
 
-<?
+<?php
 
 exit;
 

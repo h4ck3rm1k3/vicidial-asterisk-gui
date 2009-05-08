@@ -35,6 +35,73 @@ RANDOM: Randomly grabs lead within the statuses and lists defined||
 UP LAST CALL TIME: Sorts by the newest local call time for the leads||
 DOWN LAST CALL TIME: Sorts by the oldest local call time for the leads||
 WARNING, we only recommend List Mix for advanced users, Please read the ViciDial Manager Manual||
+Add Call Menu||
+Copy Call Menu||
+New Call Menu||
+Modify Call Menu||
+Delete Call Menu||
+Call Menus||
+Menu ID||
+This is the ID for this step of the call menu. This will also show up as the context that is used in the dialplan for this call menu||
+Menu Name||
+This field is the descriptive name for the call menu||
+Menu Prompt||
+This field contains the file name of the audio prompt to play at the beginning of this menu||
+Menu Timeout||
+This field is where you set the timeout in seconds that the menu will wait for the caller to enter in a DTMF choice||
+Menu Timeout Prompt||
+This field contains the file name of the audio prompt to play when the timeout has been reached. Default is NONE to play no audio at timeout||
+Menu Invalid Prompt||
+This field contains the file name of the audio prompt to play when the caller has selected an invalid option. Default is NONE to play no audio at invalid||
+Menu Repeat||
+This field is where you define the number of times that the menu will play after the first time if no valid choice is made by the caller. Default is 1 to repeat the menu once||
+Menu Time Check||
+This field is where you can select whether to restrict the Call Menu access to the specific hours set up in the selected Call Time. If the Call Time is blank, this setting will be ignored. Default is 0 for disabled||
+Call Time ID||
+This is the Call Time ID that will be used to restrict calling times if the Menu Time Check option is enabled||
+Track Calls in Real-Time Report||
+This field is where you can select whether you want the call to be tracked in the Real-time screen as an incoming IVR type call. Default is 1 for active||
+Option Value||
+This field is where you define the menu option, possible choices are||
+Option Route||
+This menu contains the options for where to send the call if this option is selected||
+The special option TIMECHECK can be used only if you have Menu Time Check enabled and there is a Call Time defined for the Menu||
+Option Route Value||
+This field is where you enter the value that defines where in the selected Option Route that the call is to be directed to||
+Option Route Value Context||
+This field is optional and only used for EXTENSION Option Routes||
+ADD A NEW CALL MENU||
+COPY CALL MENU||
+For CALLMENU, the Route Value should be the Menu ID of the Call Menu that you want the call sent to. For HANGUP, the Route Value can be the name of an audio file to play before hanging up the call. For DID, the Route Value needs to be the DID pattern that you want to send the call to. For EXTENSION, the Route Value needs to be the dialplan extension you want to send the call to, and the Route Value Context is the context that extension is located in, if left blank the context will default to default. For PHONE, the Route Value needs to be the phone login value for the phones entry that you want to send the call to. For VOICEMAIL, the Route Value needs to be the voicemail box number, the unavailable mesage will be played. For AGI, the Route Value needs to be the agi script and any values taht need to be passed to it.||
+Option Description||
+This field is where you can describe the option, this description will be put into the dialplan as a comment above the option||
+Source Menu||
+CALL MENU NOT ADDED||
+Call Menu ID must be between 2 and 50 characters in length and contain no||
+CALL MENU ADDED||
+CALL MENU NOT MODIFIED||
+CALL MENU MODIFIED||
+Click here to see Admin chages to this CALL MENU||
+DELETE THIS CALL MENU||
+MODIFY A CALL MENU RECORD||
+Time Check||
+No Time Check||
+Realtime Tracking||
+No Realtime Tracking||
+Call Menu Options||
+Option||
+CALL MENU NOT DELETED||
+CALL MENU DELETION CONFIRMATION||
+Click here to delete CALL MENU||
+CALL MENU DELETION COMPLETED||
+CALL MENU LISTINGS||
+CALLMENU will send the call to the defined Call Menu||
+Call Menu||
+If CALLMENU is selected as the DID Route, then this is the Call Menu that calls will be sent to||
+Show Call Menus||
+Add A New Call Menu||
+Copy Call Menu||
+To delete an Option, just set the Route to REMOVE and the option will be deleted when you click the SUBMIT button||
 
 
 ############################################################ CLIENT

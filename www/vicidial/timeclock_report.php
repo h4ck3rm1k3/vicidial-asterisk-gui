@@ -1,4 +1,4 @@
-<? 
+<?php 
 # timeclock_report.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -9,6 +9,7 @@
 # 80617-1416 - Fixed totals tally bug
 # 80707-0754 - Fixed groups bug, changed formatting
 # 90310-2059 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -136,7 +137,7 @@ while ($i < $user_groups_to_print)
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <TITLE>VICIDIAL: User Timeclock Report
 
-<?
+<?php
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'311111';

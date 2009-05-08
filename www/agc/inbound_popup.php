@@ -1,7 +1,7 @@
-<?
-# inbound_popup.php    version 2.0.5
+<?php
+# inbound_popup.php    version 2.2.0
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed to open up when a live_inbound call comes in giving the user
 #   options of what to do with the call or options to lookup the callerID on various web sites
@@ -30,6 +30,7 @@
 # 50711-1203 - removed HTTP authentication in favor of user/pass vars
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1205 - Added variable filters to close security holes for login form
+# 90508-0727 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -127,16 +128,16 @@ echo "<head>\n";
 echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
 	<script language="Javascript">	
-		var server_ip = '<? echo $server_ip ?>';
-		var epoch_sec = '<? echo $StarTtime ?>';
-		var user_abb = '<? echo $user_abb ?>';
-		var vmail_box = '<? echo $vmail_box ?>';
-		var ext_context = '<? echo $ext_context ?>';
-		var ext_priority = '<? echo $ext_priority ?>';
-		var voicemail_dump_exten = '<? echo $voicemail_dump_exten ?>';
-		var session_name = '<? echo $session_name ?>';
-		var user = '<? echo $user ?>';
-		var pass = '<? echo $pass ?>';
+		var server_ip = '<?php echo $server_ip ?>';
+		var epoch_sec = '<?php echo $StarTtime ?>';
+		var user_abb = '<?php echo $user_abb ?>';
+		var vmail_box = '<?php echo $vmail_box ?>';
+		var ext_context = '<?php echo $ext_context ?>';
+		var ext_priority = '<?php echo $ext_priority ?>';
+		var voicemail_dump_exten = '<?php echo $voicemail_dump_exten ?>';
+		var session_name = '<?php echo $session_name ?>';
+		var user = '<?php echo $user ?>';
+		var pass = '<?php echo $pass ?>';
 
 
 // ################################################################################
@@ -249,7 +250,7 @@ echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_i
 
 	</script>
 
-<?
+<?php
 echo "<title>LIVE INBOUND CALL";
 echo "</title>\n";
 echo "</head>\n";

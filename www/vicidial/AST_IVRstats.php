@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_IVRstats.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -10,6 +10,7 @@
 # 81107-1148 - Added average times and totals
 # 81108-0922 - Added no-callerID and unique caller counts
 # 90310-2056 - Admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -139,7 +140,7 @@ while ($i < $statcats_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 if ($shift == 'RANGE') 
 	{
 	$query_date_BEGIN = "$query_date";   

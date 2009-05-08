@@ -1,4 +1,4 @@
-<?
+<?php
 # admin_modify_lead.php
 # 
 # AST GUI database administration modify lead in vicidial_list
@@ -29,6 +29,7 @@
 # 80805-2106 - Changed comments to TEXTAREA
 # 81210-1529 - Added server recording display options
 # 90309-1829 - Added admin_log logging
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -210,7 +211,7 @@ $browser = getenv("HTTP_USER_AGENT");
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
-<? 
+<?php 
 echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead record modification<BR>\n";
 
 if ($end_call > 0)
@@ -731,7 +732,7 @@ echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds</font>";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

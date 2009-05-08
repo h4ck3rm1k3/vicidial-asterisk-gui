@@ -1,4 +1,4 @@
-<?
+<?php
 # admin_search_lead.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -18,6 +18,7 @@
 # 90121-0500 - Added filter for phone to remove non-digits
 # 90309-1828 - Added admin_log logging
 # 90310-2146 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -107,7 +108,7 @@ $browser = getenv("HTTP_USER_AGENT");
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>VICIDIAL ADMIN: Lead Search
-<? 
+<?php 
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'100';

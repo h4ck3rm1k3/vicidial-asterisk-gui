@@ -1,4 +1,4 @@
-<?
+<?php
 # timeclock_edit.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -8,6 +8,7 @@
 # 80624-1342 - First build
 # 80701-1323 - functional beta version done
 # 90310-2109 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -216,7 +217,7 @@ $browser = getenv("HTTP_USER_AGENT");
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>VICIDIAL ADMIN: Timeclock Record Edit
-<?
+<?php
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'3';
@@ -243,9 +244,9 @@ require("admin_header.php");
 
 
 <CENTER>
-<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B>Timeclock Record Edit for <? echo $user ?></TD><TD ALIGN=RIGHT> &nbsp; </TD></TR>
+<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B>Timeclock Record Edit for <?php echo $user ?></TD><TD ALIGN=RIGHT> &nbsp; </TD></TR>
 
-<? 
+<?php 
 
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -468,7 +469,7 @@ echo "ERROR! You cannot edit this timeclock record: $timeclock_id\n";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

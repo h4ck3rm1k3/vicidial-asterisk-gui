@@ -1,4 +1,4 @@
-<?
+<?php
 ### SCRIPT_busy_button.php - logging of a button click
 #
 # To be inserted into a SCRIPT in VICIDIAL with the following code:
@@ -21,6 +21,11 @@
 #	click_seconds INT(5) UNSIGNED,
 #	index (lead_id)
 #	);
+# 
+# CHANGES:
+# 90408-0618 - First Build
+# 90508-0727 - Changed to PHP long tags
+#
 
 if (isset($_GET["button_id"]))				{$button_id=$_GET["button_id"];}
 	elseif (isset($_POST["button_id"]))		{$button_id=$_POST["button_id"];}

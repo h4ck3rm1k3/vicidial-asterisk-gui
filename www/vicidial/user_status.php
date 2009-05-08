@@ -1,4 +1,4 @@
-<?
+<?php
 # user_status.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -10,6 +10,7 @@
 # 81118-1034 - Disabled change campaign because it does not work
 # 90208-0511 - Added link to user multi-day status report
 # 90310-0741 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -168,7 +169,7 @@ while ($i < $groups_to_print)
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>VICIDIAL ADMIN: User Status
-<?
+<?php
 
 
 ##### BEGIN Set variables to make header show properly #####
@@ -194,12 +195,12 @@ require("admin_header.php");
 
 
 ?>
-<TABLE WIDTH=<? echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
+<TABLE WIDTH=<?php echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; User Status for <?php echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
 
 
 
 
-<? 
+<?php 
 
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -497,7 +498,7 @@ echo "|$stage|$group|";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

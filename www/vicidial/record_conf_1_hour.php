@@ -1,7 +1,7 @@
-<?
+<?php
 # record_conf_1_hour.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # grab: $server_ip $station $session_id
 #
@@ -9,6 +9,7 @@
 #
 # 60620-1011 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -103,14 +104,14 @@ $browser = getenv("HTTP_USER_AGENT");
 <html>
 <head>
 <title>VICIDIAL RECORD CONFERENCE: 1 hour</title>
-<?
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 ?>
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
 
-<? 
+<?php 
 if ($NEW_RECORDING)
 {
 	if ( (strlen($server_ip) > 8) && (strlen($session_id) > 3) && (strlen($station) > 3) )

@@ -1020,7 +1020,7 @@ while ($sthBrowsC > $i)
 			$sthA->finish();
 
 			$k=0;
-			$stmtB="SELECT salesorderid,total,duedate from vtiger_salesorder where accountid='$crmid[$i]' and duedate > \"$TODAY 00:00:00\" order by duedate;";
+			$stmtB="SELECT salesorderid,total,duedate,smownerid,user_name from vtiger_salesorder vso, vtiger_crmentity vce, vtiger_users vu where accountid='$crmid[$i]' and duedate > \"$TODAY 00:00:00\" and vso.salesorderid=vce.crmid and vu.id=vce.smownerid order by duedate;";
 				if($DBX){print STDERR "\n|$stmtB|\n";}
 			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
@@ -1032,8 +1032,10 @@ while ($sthBrowsC > $i)
 				$total =		$aryB[1];
 					chop($total);
 				$duedate =		$aryB[2];
+				$so_owner =		$aryB[3];
+				$user =			$aryB[4];
 
-				print OFout "$salesorderid,$phone,$account,$sequence,$company,$first_name,$last_name,$VCstatus,$duedate,$total\n";
+				print OFout "$salesorderid,$phone,$account,$sequence,$company,$first_name,$last_name,$VCstatus,$duedate,$total,$user\n";
 				$m++;
 				$k++;
 				}

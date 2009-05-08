@@ -1,5 +1,10 @@
 Inbound VDAC IVR process				  2008-05-25
 
+
+NOTE: the Call Menu feature has been recently added that will enable you to create and maintain IVRs, such as those mentioned in this document, using only the web-based interface. For more information about Call Menus, take a look at the In-Groups -> Call Menu section of the Administration website or look at the ASTERISK_CONF-GEN.txt document
+
+
+
 This doc goes over the addition of the IVR status to the vicidial_auto_calls table and how calls that are not yet in an in-group(queue) can still be counted as active calls. This allows your system to show a tally of inbound calls that are still navigating menus before finding an in-group(queue) to be put into.
 
 The agi-VDAD_inbound_calltime_check.agi script does a check for the calltime scheme of the defined in-group(queue) as well as using the after-hours method for that in-group and the associated after-hours message if defined. Also, this script can place a record in the vicidial_auto_calls status in the IVR status. Calls in this status do not affect the dial ratios of blended campaigns, but they will display in the AST_timeonVDADall.php real-time status pages.

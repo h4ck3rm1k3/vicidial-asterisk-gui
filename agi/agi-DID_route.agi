@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-DID_route.agi version 2.0.5
+# agi-DID_route.agi version 2.2.0
 # 
 # runs when a call comes into an inbound context on a trunk. This script will 
 # send the calls to various places depending on the settings for each DID.
@@ -10,13 +10,14 @@
 # ;inbound DID catch-all:
 #exten => _X.,1,AGI(agi-DID_route.agi)
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 81007-0324 - First Build
 # 90115-0645 - Activated AGENT call routing
 # 90117-0756 - Added vicidial_did_log logging to database
 # 90214-0217 - Added 'default' did option, to send all non-matching calls to, enforced did_active setting
+# 90507-1145 - Added CALLMENU option
 #
 
 $script = 'agi-DID_route.agi';
@@ -151,7 +152,7 @@ if ( (!$callerid) or ($callerid =~ /unknown/) )
 
 
 ### Grab DID values from the database
-$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup FROM vicidial_inbound_dids where did_pattern = '$extension' and did_active='Y';";
+$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup,menu_id FROM vicidial_inbound_dids where did_pattern = '$extension' and did_active='Y';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -171,6 +172,7 @@ if ($sthArows > 0)
 	$user =							$aryA[10];
 	$user_unavailable_action =		$aryA[11];
 	$user_route_settings_ingroup =	$aryA[12];
+	$menu_id =						$aryA[13];
 	}
 $sthA->finish();
 
@@ -184,7 +186,7 @@ if ($AGILOG) {$did_string = "$SQLdate|$uniqueid|$channel|$extension|$callerid|$c
 if ($sthArows < 1)
 	{
 	### Grab DID values from the database for a default DID pattern if there is one
-	$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup FROM vicidial_inbound_dids where did_pattern = 'default' and did_active='Y';";
+	$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup,menu_id FROM vicidial_inbound_dids where did_pattern = 'default' and did_active='Y';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -204,6 +206,7 @@ if ($sthArows < 1)
 		$user =							$aryA[10];
 		$user_unavailable_action =		$aryA[11];
 		$user_route_settings_ingroup =	$aryA[12];
+		$menu_id =						$aryA[13];
 		}
 	$sthA->finish();
 
@@ -338,6 +341,21 @@ if ($did_route =~ /EXTEN/)
 	exit;
 	}
 
+
+### Route call to a call menu on the system
+if ($did_route =~ /CALLMENU/)
+	{
+	$XFERcontext = "$menu_id";
+	if ($AGILOG) {$agi_string = "exiting the DID app, transferring call to CALLMENU $XFERcontext";   &agi_output;}
+	print "SET CONTEXT $XFERcontext\n";
+		checkresult($result);
+	print "SET EXTENSION s\n";
+		checkresult($result);
+	print "SET PRIORITY 1\n";
+		checkresult($result);
+	
+	exit;
+	}
 
 
 

@@ -5,6 +5,7 @@
 # Designed to keep the astGUIclient processes alive and check every minute
 # Replaces all other ADMIN_keepalive scripts
 # Uses /etc/astguiclient.conf file to know which processes to keepalive
+# Also, this script generates Asterisk conf files and reloads Asterisk
 #
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -18,6 +19,7 @@
 # 90325-2239 - Rewrote sending of reload commands to Asterisk
 # 90327-1421 - Removed [globals] tag from auto-generated extensions file
 # 90409-1251 - Fixed voicemail conf file issue
+# 90506-1155 - Added Call Menu functionality
 #
 
 $DB=0; # Debug flag
@@ -438,6 +440,9 @@ if ($timeclock_auto_logout > 0)
 	if ($DB) {print "running Timeclock auto-logout process...\n";}
 	`/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2`;
 	}
+################################################################################
+#####  END keepalive of ViciDial-related scripts
+################################################################################
 
 
 
@@ -842,6 +847,196 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		}
 
 
+
+
+
+	##### Get the Call Menu entries #####
+	$stmtA = "SELECT menu_id,menu_name,menu_prompt,menu_timeout,menu_timeout_prompt,menu_invalid_prompt,menu_repeat,menu_time_check,call_time_id,track_in_vdac FROM vicidial_call_menu order by menu_id;";
+	#	print "$stmtA\n";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$menu_id[$i] =				"$aryA[0]";
+		$menu_name[$i] =			"$aryA[1]";
+		$menu_prompt[$i] =			"$aryA[2]";
+		$menu_timeout[$i] =			"$aryA[3]";
+		$menu_timeout_prompt[$i] =	"$aryA[4]";
+		$menu_invalid_prompt[$i] =	"$aryA[5]";
+		$menu_repeat[$i] =			"$aryA[6]";
+		$menu_time_check[$i] =		"$aryA[7]";
+		$call_time_id[$i] =			"$aryA[8]";
+		$track_in_vdac[$i] =		"$aryA[9]";
+		if ($track_in_vdac[$i] > 0)
+			{$track_in_vdac[$i] = 'YES'}
+		else
+			{$track_in_vdac[$i] = 'NO'}
+		$i++;
+		}
+	$sthA->finish();
+
+	$i=0;
+	$call_menu_ext = '';
+	$time_check_scheme = '';
+	$time_check_route = '';
+	$time_check_route_value = '';
+	$time_check_route_context = '';
+	while ($sthArows > $i)
+		{
+		$stmtA = "SELECT option_value,option_description,option_route,option_route_value,option_route_value_context FROM vicidial_call_menu_options where menu_id='$menu_id[$i]' order by option_value;";
+		#	print "$stmtA\n";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArowsJ=$sthA->rows;
+		$j=0;
+		$call_menu_options_ext = '';
+		if ($DBX>0) {print "$sthArowsJ|$stmtA\n";}
+		while ($sthArowsJ > $j)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$option_value[$j] =					"$aryA[0]";
+			$option_description[$j] =			"$aryA[1]";
+			$option_route[$j] =					"$aryA[2]";
+			$option_route_value[$j] =			"$aryA[3]";
+			$option_route_value_context[$j] =	"$aryA[4]";
+			if ($option_value[$j] =~ /STAR/) {$option_value[$j] = '*';}
+			if ($option_value[$j] =~ /HASH/) {$option_value[$j] = '#';}
+			$j++;
+			}
+
+		$j=0;
+		while ($sthArowsJ > $j)
+			{
+			if ( ($option_value[$j] =~ /TIMECHECK/) && ($menu_time_check[$i] > 0) && (length($call_time_id[$i])>0) )
+				{
+				$time_check_scheme =			$call_time_id[$i];
+				$time_check_route =				$option_route[$j];
+				$time_check_route_value =		$option_route_value[$j];
+				$time_check_route_context =		$option_route_value_context[$j];
+				}
+			else
+				{
+				if (length($option_description[$j])>0)
+					{
+					$call_menu_options_ext .= "; $option_description[$j]\n";
+					}
+				if ($option_route[$j] =~ /AGI/)
+					{
+					$call_menu_options_ext .= "exten => $option_value[$j],1,AGI($option_route_value[$j])\n";
+					}
+				if ($option_route[$j] =~ /CALLMENU/)
+					{
+					$call_menu_options_ext .= "exten => $option_value[$j],1,Goto($option_route_value[$j],s,1)\n";
+					}
+				if ($option_route[$j] =~ /DID/)
+					{
+					$call_menu_options_ext .= "exten => $option_value[$j],1,Goto(trunkinbound,$option_route_value[$j],1)\n";
+					}
+				if ($option_route[$j] =~ /EXTENSION/)
+					{
+					if (length($option_route_value_context[$j])>0) {$option_route_value_context[$j] = "$option_route_value_context[$j],";}
+					$call_menu_options_ext .= "exten => $option_value[$j],1,Goto($option_route_value_context[$j]$option_route_value[$j],1)\n";
+					}
+				if ($option_route[$j] =~ /VOICEMAIL/)
+					{
+					$call_menu_options_ext .= "exten => $option_value[$j],1,Goto(default,85026666666666$option_route_value[$j],1)\n";
+					}
+				if ($option_route[$j] =~ /HANGUP/)
+					{
+					if ( (length($option_route_value[$j])>0) && ($option_route_value[$j] !~ /NONE/) )
+						{
+						$call_menu_options_ext .= "exten => $option_value[$j],1,Playback($option_route_value[$j])\n";
+						$call_menu_options_ext .= "exten => $option_value[$j],n,Hangup\n";
+						}
+					else
+						{
+						$call_menu_options_ext .= "exten => $option_value[$j],1,Hangup\n";
+						}
+					}
+				if ($option_route[$j] =~ /PHONE/)
+					{
+					$stmtA = "SELECT dialplan_number,server_ip FROM phones where login='$option_route_value[$j]';";
+					#	print "$stmtA\n";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArowsP=$sthA->rows;
+					if ($sthArowsP > 0)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$Pdialplan =	"$aryA[0]";
+						$Pserver_ip =	"$aryA[1]";
+
+						### format the remote server dialstring to get the call to the overflow agent meetme room
+						$S='*';
+						if( $Pserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+							{
+							$a = leading_zero($1); 
+							$b = leading_zero($2); 
+							$c = leading_zero($3); 
+							$d = leading_zero($4);
+							$DIALstring = "$a$S$b$S$c$S$d$S";
+							}
+						$call_menu_options_ext .= "exten => $option_value[$j],1,Goto(default,$DIALstring$Pdialplan,1)\n";
+						}
+					$sthA->finish();
+					}
+				}
+			if ($DBX>0) {print "$i|$j|     $menu_id[$i]|$option_value[$j]\n";}
+			$j++;
+			}
+		$sthA->finish();
+
+
+		$call_menu_ext .= "\n";
+		$call_menu_ext .= "; $menu_name[$i]\n";
+		$call_menu_ext .= "[$menu_id[$i]]\n";
+		$call_menu_ext .= "exten => s,1,AGI(agi-VDAD_inbound_calltime_check.agi,-----$track_in_vdac[$i]-----$menu_id[$i]-----$time_check_scheme-----$time_check_route-----$time_check_route_value-----$time_check_route_context)\n";
+		$call_menu_ext .= "exten => s,n,Background($menu_prompt[$i])\n";
+		$call_menu_ext .= "exten => s,n,WaitExten($menu_timeout[$i])\n";
+		$k=0;
+		while ($k < $menu_repeat[$i]) 
+			{
+			$call_menu_ext .= "exten => s,n,Background($menu_prompt[$i])\n";
+			$call_menu_ext .= "exten => s,n,WaitExten($menu_timeout[$i])\n";
+			$k++;
+			}
+		$call_menu_ext .= "exten => s,n,Hangup\n";
+		$call_menu_ext .= "\n";
+		$call_menu_ext .= "$call_menu_options_ext";
+		$call_menu_ext .= "\n";
+
+		if ( (length($menu_timeout_prompt[$i])>0)  && ($menu_timeout_prompt[$i] !~ /NONE/) )
+			{
+			$call_menu_ext .= "exten => t,1,Playback($menu_timeout_prompt[$i])\n";
+			$call_menu_ext .= "exten => t,n,Goto(s,2)\n";
+			}
+		else
+			{
+			$call_menu_ext .= "exten => t,1,Goto(s,2)\n";
+			}
+		if ( (length($menu_invalid_prompt[$i])>0) && ($menu_invalid_prompt[$i] !~ /NONE/) )
+			{
+			$call_menu_ext .= "exten => i,1,Playback($menu_invalid_prompt[$i])\n";
+			$call_menu_ext .= "exten => i,n,Goto(s,2)\n";
+			}
+		else
+			{
+			$call_menu_ext .= "exten => i,1,Goto(s,2)\n";
+			}
+
+		$call_menu_ext .= "exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})\n";
+		$call_menu_ext .= "\n";
+
+		$i++;
+		}
+
+
+
+
+
 	if ($DB) {print "writing auto-gen conf files\n";}
 
 	open(ext, ">/etc/asterisk/extensions-vicidial.conf") || die "can't open /etc/asterisk/extensions-vicidial.conf: $!\n";
@@ -851,6 +1046,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 
 	print ext "; WARNING- THIS FILE IS AUTO-GENERATED BY VICIDIAL, ANY EDITS YOU MAKE WILL BE LOST\n";
 	print ext "$ext\n";
+	print ext "$call_menu_ext\n";
 	print ext "[vicidial-auto]\n";
 	print ext "exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})\n";
 	print ext "$Lext\n";

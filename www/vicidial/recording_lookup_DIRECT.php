@@ -1,4 +1,4 @@
-<?
+<?php
 ### recording_lookup_DIRECT.php
 #
 #	REQUIRED! - check all paths and directory names, need to create a temp directory
@@ -30,6 +30,7 @@
 
 # CHANGES
 # 71112-1409 - First Build
+# 90508-0644 - Changed to PHP long tags
 #
 
 $STARTtime = date("U");

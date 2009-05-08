@@ -1,4 +1,4 @@
-<?
+<?php
 # user_group_bulk_change.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -7,6 +7,7 @@
 # 81119-0918 - First build
 # 90309-1830 - Added admin_log logging
 # 90310-2144 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -122,7 +123,7 @@ while ($i < $groups_to_print)
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>VICIDIAL ADMIN: User Group Bulk Change
-<?
+<?php
 
 ##### BEGIN Set variables to make header show properly #####
 $ADD =					'311111';
@@ -155,7 +156,7 @@ require("admin_header.php");
 
 
 
-<? 
+<?php 
 
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=3><B> &nbsp; \n";
 
@@ -259,7 +260,7 @@ echo "|$stage|$group|";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

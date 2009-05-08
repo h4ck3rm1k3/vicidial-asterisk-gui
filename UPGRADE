@@ -31,6 +31,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	AST_VDhopper_MIXtest.pl script, if you use it change it to the
 	AST_VDhopper.pl in your crontab entries
 
+7. Added Call Menus Feature(aka IVR) in the In-groups section. This allows you
+	to create call menus with DTMF options using the Admin web interface.
+
+8. Changed all PHP scripts to use long tags, short tags are depricated in PHP6
+
 
 
 

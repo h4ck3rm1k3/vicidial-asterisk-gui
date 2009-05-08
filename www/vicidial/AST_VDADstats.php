@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_VDADstats.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -17,6 +17,7 @@
 # 81109-2341 - Added Productivity Rating
 # 90225-1140 - Changed to multi-campaign capability
 # 90310-2034 - Admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -144,7 +145,7 @@ while ($i < $statcats_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: VDAD Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

@@ -1,16 +1,17 @@
-<?
+<?php
 # voice_lab.php
 # 
 # This script is designed to broadcast a recorded message or allow a person to
 # speak to all agents logged into a VICIDIAL campaign.
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES
 #
 # 61220-1050 - First Build
 # 70115-1246 - Added ability to define an exten to play
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -130,14 +131,14 @@ while ($campaigns_to_print > $o)
 <html>
 <head>
 <title>VICIDIAL VOICE LAB: Admin</title>
-<?
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 ?>
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
 
-<? 
+<?php 
 if ($NEW_VOICE_LAB > 0)
 {
 	if ( (strlen($server_ip) > 6) && (strlen($session_id) > 6) && (strlen($campaign_id) > 2) )

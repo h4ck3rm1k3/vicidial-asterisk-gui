@@ -488,7 +488,7 @@ if ($affected_rows > 0)
 					$TTS_text[$s] =~ s/--A--first_name--B--/$TTS_first_name/gi;
 					$TTS_text[$s] =~ s/--A--last_name--B--/$TTS_last_name/gi;
 					$TTS_text[$s] =~ s/--A--title--B--/$TTS_title/gi;
-					$TTS_text[$s] =~ s/[^,\.\<\>\'\/\= 0-9a-zA-Z]//gi;
+					$TTS_text[$s] =~ s/[^,\.\<\>\'\/\=\_ 0-9a-zA-Z]//gi;
 					$TTS_textRAW[$s] =	$TTS_text[$s];
 					$TTS_text[$s] =~ s/ /\\ /gi;
 					$TTS_text[$s] =~ s/\./\\./gi;

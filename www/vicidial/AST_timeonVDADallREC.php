@@ -1,7 +1,7 @@
-<? 
+<?php 
 # AST_timeonVDADallREC.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -26,6 +26,7 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70123-1151 - Added non_latin options for substr in display variables, thanks Marin Blu
 # 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -197,9 +198,9 @@ $F=''; $FG=''; $B=''; $BG='';
 <script language="Javascript">
 
 var filenamelog = '';
-var admuser 	= '<? echo $PHP_AUTH_USER ?>';
-var filedate 	= '<? echo $FILE_TIME ?>';
-var pass 	= '<? echo $PHP_AUTH_PW ?>';
+var admuser 	= '<?php echo $PHP_AUTH_USER ?>';
+var filedate 	= '<?php echo $FILE_TIME ?>';
+var pass 	= '<?php echo $PHP_AUTH_PW ?>';
 
 var recording_exten = '8309';
 var ext_context = 'default';
@@ -283,7 +284,7 @@ function conf_send_recording(taskconfrectype,sesname,taskconfrec,taskconffile,le
 -->
  </STYLE>
 
-<? 
+<?php 
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&RECmonitorLINK=$RECmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">\n";

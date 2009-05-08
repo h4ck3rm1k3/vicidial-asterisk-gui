@@ -1,4 +1,4 @@
-<?
+<?php
 # welcome_demo.php - VICIDIAL welcome Demo page
 # 
 # 

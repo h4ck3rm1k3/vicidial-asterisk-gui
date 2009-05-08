@@ -1,7 +1,7 @@
-<?
-# call_log_display.php    version 2.0.5
+<?php
+# call_log_display.php    version 2.2.0
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send the inbound and outbound calls for a specific phone
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -28,6 +28,7 @@
 # 60323-1550 - added option for showing different number dialed in log
 # 60421-1401 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1202 - Added variable filters to close security holes for login form
+# 90508-0727 - Changed to PHP long tags
 # 
 
 require("dbconnect.php");

@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_agent_time_sheet.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -9,6 +9,7 @@
 #            - Added required user/pass to gain access to this page
 # 80624-0132 - Added vicidial_timeclock entries
 # 90310-0745 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -64,7 +65,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Time Sheet";
 

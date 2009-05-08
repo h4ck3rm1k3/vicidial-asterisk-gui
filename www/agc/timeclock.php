@@ -1,17 +1,18 @@
-<?
+<?php
 # timeclock.php - VICIDIAL system user timeclock
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 80523-0134 - First Build 
 # 80524-0225 - Changed event_date to DATETIME, added timestamp field and tcid_link field
 # 80525-2351 - Added an audit log that is not to be editable
 # 80602-0641 - Fixed status update bug
+# 90508-0727 - Changed to PHP long tags
 #
 
-$version = '2.0.5-4';
-$build = '80602-0641';
+$version = '2.2.0-5';
+$build = '90508-0727';
 
 $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");

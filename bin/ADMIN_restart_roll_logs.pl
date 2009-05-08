@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# ADMIN_restart_roll_logs.pl    version 2.0.5
+# ADMIN_restart_roll_logs.pl    version 2.2.0
 #
 # script to roll the Asterisk logs on machine restart
 #
@@ -10,6 +10,7 @@
 #
 # CHANGES:
 # 90311-0921 - Added /var/log/asterisk/screenlog log rolling
+# 90508-0535 - Changes root screenlog to /var/log/astguiclient
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -36,7 +37,7 @@ print "rolling Asterisk cdr logs...\n";
 `mv -f /var/log/asterisk/cdr-custom/Master.csv /var/log/asterisk/cdr-custom/Master.csv.$now_date`;
 
 print "rolling Asterisk screen log...\n";
-`mv -f /screenlog.0 /screenlog.0.$now_date`;
+`mv -f /var/log/astguiclient/screenlog.0 /var/log/astguiclient/screenlog.0.$now_date`;
 
 print "rolling Asterisk root screen log...\n";
 `mv -f /root/screenlog.0 /root/screenlog.0.$now_date`;

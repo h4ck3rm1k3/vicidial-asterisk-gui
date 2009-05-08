@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_agent_performance_detail.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -16,6 +16,7 @@
 # 81108-0716 - fixed user same-name bug
 # 81110-0056 - fixed pause code display bug
 # 90310-2039 - Admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -124,7 +125,7 @@ while ($i < $user_groups_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

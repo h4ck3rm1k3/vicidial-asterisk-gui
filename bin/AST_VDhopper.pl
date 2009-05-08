@@ -241,16 +241,15 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
-	$rec_count=0;
-	while ($sthArows > $rec_count)
+ if ($sthArows==0) {die "Server IP $VARserver_ip does not have an entry in the servers table\n\n";}	
+ if ($sthArows > 0)
 		{
-		 @aryA = $sthA->fetchrow_array;
-			$DBvd_server_logs =			"$aryA[0]";
-			$DBSERVER_GMT		=		"$aryA[1]";
-			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
-				else {$SYSLOG = '0';}
-			if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-		 $rec_count++;
+		@aryA = $sthA->fetchrow_array;
+		$DBvd_server_logs =			"$aryA[0]";
+		$DBSERVER_GMT		=		"$aryA[1]";
+		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+			else {$SYSLOG = '0';}
+		if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
 		}
 	$sthA->finish();
 

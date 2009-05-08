@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_timeonVDADallSUMMARY.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -15,6 +15,7 @@
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
 # 80525-1040 - Added IVR status summary display for inbound calls
 # 90310-2119 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -103,7 +104,7 @@ if (!isset($RR))   {$RR=4;}
 -->
  </STYLE>
 
-<? 
+<?php 
 
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&adastats=$adastats\">\n";
 echo "<TITLE>VICIDIAL: Realtime All Campaigns Summary</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";

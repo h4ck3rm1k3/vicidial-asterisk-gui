@@ -1,10 +1,11 @@
-<? 
+<?php 
 # AST_inboundEXTstats_department.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 70201-1710 - First Build
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -92,7 +93,7 @@ while ($i < $dept_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 #echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB\">\n";
 echo "<TITLE>ASTERISK: Inbound Calls Stats - By Department</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";

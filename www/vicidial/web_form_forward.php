@@ -1,12 +1,13 @@
-<?
+<?php
 # web_form_forward.php - custom script forward agent to web page and alter vars
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # You will need to customize this to your needs
 #
 # CHANGELOG:
 # 80626-1121 - First Build
+# 90508-0644 - Changed to PHP long tags
 #
 
 if (isset($_GET["phone_number"]))	{$phone_number=$_GET["phone_number"];}

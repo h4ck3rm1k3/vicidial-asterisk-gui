@@ -24,3 +24,179 @@ If you have special settings that you want to use for phones such as codecs you 
 If you are using a SIP carrier, then you may need to manually set "externip=XXX.XXX.XXX.XXX" in the /etc/asterisk/sip.conf file where XXX.XXX.XXX.XXX is the external IP address of your server as the outside world(or your carrier) sees it.
 
 
+
+
+
+
+
+
+CALL MENUS (aka IVRs):
+
+The Call Menus feature allows for the creation of IVR segments that can be linked together through contexts in the dialplan. In this way, both simple and complex menus can be created, to deliver anything from a simple Automated Atttendant to more detailed IVR applications. 
+
+The Menu ID is the unique identifier of the call menu and it is also used as the context when the entry is created in the dialplan.
+
+
+Call Menu Options:
+0,1,2,3,4,5,6,7,8,9,*,#,A,B,C,D,TIMECHECK
+
+The options are the DTMF digits that a caller can select within this Call Menu, with the exception of the TIMECHECK option which is used when the call is taking place outside of the call_time as defined in the Call menu.
+
+
+Call Menu Routes:
+CALLMENU,HANGUP,DID,EXTENSION,PHONE,VOICEMAIL,AGI
+
+The option route is similar to the DID route since it defines what method to use to send the call to the option route value. The route value is dependant upon the route selected, for example if you selected DID as the route you would then need to select a value DID to send the call to. Or if you selected PHONE as the route, the route value would need to be a valid phone login as defined in the phones section of Administration.
+
+
+
+An example of a call menu:
+
+menu_id =			test_menu
+menu_name =			this is only a test
+menu_prompt =			hello
+menu_timeout =			10
+menu_timeout_prompt =		vm-goodbye
+menu_invalid_prompt =		
+menu_repeat =			1
+menu_time_check =		1
+call_time_id =			9am-5pm
+track_in_vdac =			1
+
+menu_id =			test_menu
+option_value =			1
+option_description = 		This is what happens when you press 1
+option_route =			DID
+option_route_value =		6666
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			2
+option_description = 		This is what happens when you press 2
+option_route =			DID
+option_route_value =		6667
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			3
+option_description = 		This is what happens when you press 3
+option_route =			EXTENSION
+option_route_value =		101
+option_route_value_context =	default
+
+menu_id =			test_menu
+option_value =			4
+option_description = 		This is what happens when you press 4
+option_route =			PHONE
+option_route_value =		350
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			5
+option_description = 		This is what happens when you press 5
+option_route =			CALLMENU
+option_route_value =		test_menu_2
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			6
+option_description = 		This is what happens when you press 6
+option_route =			HANGUP
+option_route_value =		vm-goodbye
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			7
+option_description = 		This is what happens when you press 7
+option_route =			VOICEMAIL
+option_route_value =		350
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			8
+option_description = 		This is what happens when you press 8
+option_route =			AGI
+option_route_value =		agi-test.agi,variables-go-here
+option_route_value_context =	
+
+menu_id =			test_menu
+option_value =			TIMECHECK
+option_description = 		
+option_route =			EXTENSION
+option_route_value =		101
+option_route_value_context =	default
+
+
+
+This is what it would look like in the dialplan:
+
+
+; this is only a test
+[test_menu]
+exten => s,1,AGI(agi-VDAD_inbound_calltime_check.agi,-----YES-----test_menu-----24hours-----EXTENSION-----101-----default)
+exten => s,n,Background(hello)
+exten => s,n,WaitExten(10)
+exten => s,n,Background(hello)
+exten => s,n,WaitExten(10)
+exten => s,n,Hangup
+
+; This is what happens when you press 1
+exten => 1,1,Goto(6666,1,trunkinbound)
+; This is what happens when you press 2
+exten => 2,1,Goto(6667,1,trunkinbound)
+; This is what happens when you press 3
+exten => 3,1,Goto(101,1,default)
+; This is what happens when you press 4
+exten => 4,1,Goto(350,1,default)
+; This is what happens when you press 5
+exten => 5,1,Goto(s,1,test_menu_2)
+; This is what happens when you press 6
+exten => 6,1,Playback(vm-goodbye)
+exten => 6,n,Hangup
+; This is what happens when you press 7
+exten => 7,1,Goto(85026666666666350,1,default)
+; This is what happens when you press 8
+exten => 8,1,AGI(agi-test.agi,variables-go-here)
+
+exten => i,1,Goto(s,2)
+exten => t,1,Playback(vm-goodbye)
+exten => t,n,Goto(s,2)
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+
+
+
+
+
+
+
+
+Database changes needed for Call Menus:
+###### DO NOT RUN, FOR DOCUMENTATION PURPOSES ONLY! ######
+
+CREATE TABLE vicidial_call_menu (
+menu_id VARCHAR(50) PRIMARY KEY NOT NULL,
+menu_name VARCHAR(100),
+menu_prompt VARCHAR(100),
+menu_timeout SMALLINT(2) UNSIGNED default '10',
+menu_timeout_prompt VARCHAR(100) default 'NONE',
+menu_invalid_prompt VARCHAR(100) default 'NONE',
+menu_repeat TINYINT(1) UNSIGNED default '0',
+menu_time_check ENUM('0','1') default '0',
+call_time_id VARCHAR(20) default '',
+track_in_vdac ENUM('0','1') default '1'
+);
+
+CREATE TABLE vicidial_call_menu_options (
+menu_id VARCHAR(50) NOT NULL,
+option_value VARCHAR(20) NOT NULL default '',
+option_description VARCHAR(255) default '',
+option_route VARCHAR(20),
+option_route_value VARCHAR(100),
+option_route_value_context VARCHAR(100),
+index (menu_id),
+unique index menuoption (menu_id, option_value)
+);
+
+ALTER TABLE vicidial_inbound_dids MODIFY did_route ENUM('EXTEN','VOICEMAIL','AGENT','PHONE','IN_GROUP','CALLMENU') default 'EXTEN';
+ALTER TABLE vicidial_inbound_dids ADD menu_id VARCHAR(50) default '';

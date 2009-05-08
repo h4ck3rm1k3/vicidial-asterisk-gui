@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_CLOSER_service_level.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -10,6 +10,7 @@
 # 80519-0413 - rewrote time intervals code and stats gathering code
 # 80528-2320 - fixed small calculation bugs and display bugs, added more shifts
 # 90310-2117 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -97,7 +98,7 @@ while ($i < $groups_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: VDAD Closer Service Level Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

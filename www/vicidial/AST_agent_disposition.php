@@ -1,13 +1,14 @@
-<? 
+<?php 
 # AST_agent_disposition.php
 #
 # Date Range - Agent/Campaign Disposition (Perfect Network Corporation)
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 70201-1213 - First build - from Marin Blu
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -75,7 +76,7 @@ while ($i < $campaigns_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Disposition</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";

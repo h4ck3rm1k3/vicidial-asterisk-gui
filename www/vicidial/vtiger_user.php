@@ -1,4 +1,4 @@
-<?
+<?php
 # vtiger_user.php - script used to synchronize the users from the VICIDIAL
 #                   vicidial_users table into the Vtiger system as well as
 #                   the groups from VICIDIAL to Vtiger
@@ -8,6 +8,7 @@
 # CHANGES
 # 81231-1307 - First build
 # 90228-2152 - Added Groups support
+# 90508-0644 - Changed to PHP long tags
 #
 
 header ("Content-type: text/html; charset=utf-8");

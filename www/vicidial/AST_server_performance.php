@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_server_performance.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -11,6 +11,7 @@
 #            - Fixed vertical scaling issues
 # 80118-1508 - Fixed horizontal scale marking issues
 # 90310-2151 - Added admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -84,7 +85,7 @@ while ($i < $servers_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Server Performance</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

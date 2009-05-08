@@ -1,7 +1,7 @@
-<?
+<?php
 # astguiclient.php - the web-based version of the astGUIclient client application
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also you need to have the login
@@ -56,6 +56,7 @@
 # 60421-1357 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1103 - Added variable filters to close security holes for login form
 # 60829-1528 - Made compatible with WeBRooTWritablE setting in dbconnect.php
+# 90508-0727 - Changed to PHP long tags
 # 
 
 require("dbconnect.php");
@@ -425,31 +426,31 @@ else
 	var last_filename = '';
 	var LCAcount = 0;
 	var LMAcount = 0;
-	var filedate = '<? echo $FILE_TIME ?>';
-	var agcDIR = '<? echo $agcDIR ?>';
-	var agcPAGE = '<? echo $agcPAGE ?>';
-	var extension = '<? echo $extension ?>';
-	var extension_xfer = '<? echo $extension ?>';
-	var dialplan_number = '<? echo $dialplan_number ?>';
-	var ext_context = '<? echo $ext_context ?>';
-	var protocol = '<? echo $protocol ?>';
-	var server_ip = '<? echo $server_ip ?>';
-<?
+	var filedate = '<?php echo $FILE_TIME ?>';
+	var agcDIR = '<?php echo $agcDIR ?>';
+	var agcPAGE = '<?php echo $agcPAGE ?>';
+	var extension = '<?php echo $extension ?>';
+	var extension_xfer = '<?php echo $extension ?>';
+	var dialplan_number = '<?php echo $dialplan_number ?>';
+	var ext_context = '<?php echo $ext_context ?>';
+	var protocol = '<?php echo $protocol ?>';
+	var server_ip = '<?php echo $server_ip ?>';
+<?php
 if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	else {echo "\tvar refresh_interval = $fast_refresh_rate;\n";}
 ?>
-	var user_abb = '<? echo $user_abb ?>';
-	var voicemail_id = '<? echo $voicemail_id ?>';
-	var voicemail_exten = '<? echo $voicemail_exten ?>';
-	var voicemail_dump_exten = '<? echo $voicemail_dump_exten ?>';
+	var user_abb = '<?php echo $user_abb ?>';
+	var voicemail_id = '<?php echo $voicemail_id ?>';
+	var voicemail_exten = '<?php echo $voicemail_exten ?>';
+	var voicemail_dump_exten = '<?php echo $voicemail_dump_exten ?>';
 	var new_messages = 999;
 	var old_messages = 999;
-	var outbound_cid = '<? echo $outbound_cid ?>';
-	var local_web_callerID_URL_enc = '<? echo $local_web_callerID_URL_enc ?>';
-	var epoch_sec = <? echo $StarTtime ?>;
-	var dtmf_send_extension = '<? echo $dtmf_send_extension ?>';
-	var recording_exten = '<? echo $recording_exten ?>';
-	var park_on_extension = '<? echo $park_on_extension ?>';
+	var outbound_cid = '<?php echo $outbound_cid ?>';
+	var local_web_callerID_URL_enc = '<?php echo $local_web_callerID_URL_enc ?>';
+	var epoch_sec = <?php echo $StarTtime ?>;
+	var dtmf_send_extension = '<?php echo $dtmf_send_extension ?>';
+	var recording_exten = '<?php echo $recording_exten ?>';
+	var park_on_extension = '<?php echo $park_on_extension ?>';
 	var park_count=0;
 	var park_refresh=0;
 	var check_n = 0;
@@ -457,7 +458,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var logout_stop_timeouts = 0;
 	var lastconf='';
 	var agc_dial_prefix = '91';
-	var monitor_prefix = '<? echo $monitor_prefix ?>';
+	var monitor_prefix = '<?php echo $monitor_prefix ?>';
 	var menuheight = 30;
 	var menuwidth = 30;
 	var menufontsize = 8;
@@ -480,15 +481,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var busytrunkhangup_order='asc';
 	var busylocalhangup_order='asc';
 	var xmlhttp=false;
-	var admin_hangup_enabled = '<? echo $admin_hangup_enabled ?>';
-	var admin_hijack_enabled = '<? echo $admin_hijack_enabled ?>';
-	var admin_monitor_enabled = '<? echo $admin_monitor_enabled ?>';
+	var admin_hangup_enabled = '<?php echo $admin_hangup_enabled ?>';
+	var admin_hijack_enabled = '<?php echo $admin_hijack_enabled ?>';
+	var admin_monitor_enabled = '<?php echo $admin_monitor_enabled ?>';
 	var XfeR_channel = '';
-	var user = '<? echo $user ?>';
-	var pass = '<? echo $pass ?>';
-	var phone_login = '<? echo $phone_login ?>';
-	var phone_pass = '<? echo $phone_pass ?>';
-	var session_name = '<? echo $session_name ?>';
+	var user = '<?php echo $user ?>';
+	var pass = '<?php echo $pass ?>';
+	var phone_login = '<?php echo $phone_login ?>';
+	var phone_pass = '<?php echo $phone_pass ?>';
+	var session_name = '<?php echo $session_name ?>';
 	var image_livecall_OFF = new Image();
 	image_livecall_OFF.src="./images/agc_live_call_OFF.gif";
 	var image_livecall_ON = new Image();
@@ -505,13 +506,13 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var favoritesEDIT = new Array();
 	var favorites_namesEDIT = new Array();
 	var favlist = new Array();
-	var favlistCT = '<? echo $favlistCT ?>';
-	var favorites_count = '<? echo $favorites_count ?>';
-	var favorites_countEDIT = '<? echo $favorites_count ?>';
-	var favorites_listX = '<? echo $favorites_listX ?>';
-	var favorites_list = "<? echo $favorites_list ?>";
-	var favorites_listEDIT = "<? echo $favorites_list ?>";
-	<? $h=0;
+	var favlistCT = '<?php echo $favlistCT ?>';
+	var favorites_count = '<?php echo $favorites_count ?>';
+	var favorites_countEDIT = '<?php echo $favorites_count ?>';
+	var favorites_listX = '<?php echo $favorites_listX ?>';
+	var favorites_list = "<?php echo $favorites_list ?>";
+	var favorites_listEDIT = "<?php echo $favorites_list ?>";
+	<?php $h=0;
 	while ($favorites_count > $h)
 	{
 	echo "favorites['$h'] = \"$favorites[$h]\";\n";
@@ -2704,7 +2705,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 -->
 </style>
-<?
+<?php
 echo "</head>\n";
 
 
@@ -2716,7 +2717,7 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=5 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
-<?	echo "Welcome $LOGfullname, you are logged into this phone: $fullname - $protocol/$extension on $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a><BR>\n"; ?>
+<?php	echo "Welcome $LOGfullname, you are logged into this phone: $fullname - $protocol/$extension on $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a><BR>\n"; ?>
 </TD></TR>
 <TR VALIGN=TOP ALIGN=LEFT>
 <TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="./images/agc_tab_main.gif" ALT="Main Panel" WIDTH=83 HEIGHT=30 BORDER=0></A></TD>
@@ -2802,12 +2803,12 @@ echo "</head>\n";
 <tr><td align=center><div class="scroll_log" id="outboundcallsspan"></div></td></tr>
 <tr><td align=center><font face="Arial,Helvetica"><B>INBOUND CALLS:</B></font></td></tr>
 <tr><td align=center><div class="scroll_log" id="inboundcallsspan"></div></td></tr>
-<tr><td align=left><font face="Arial,Helvetica" size=1>astGUIclient web-client VERSION:<? echo $version ?> BUILD:<? echo $build ?></font></td></tr>
+<tr><td align=left><font face="Arial,Helvetica" size=1>astGUIclient web-client VERSION:<?php echo $version ?> BUILD:<?php echo $build ?></font></td></tr>
 </TABLE>
 
 <span style="position:absolute;left:640px;top:0px;z-index:33;" id="FavoriteSBox">
     <table border=0 bgcolor="#DDDDFF" width=200 height=400 cellpadding=2 ALIGN=TOP><TR><TD align=center><span id="FavoriteSContent"><font class="sh_text"> FAVORITES</font><font class="sb_text"> &nbsp; &nbsp; &nbsp; <a href="#" onclick="favorites_editor('BuilD');return false;"> edit</a></span></TD></TR>
-<?
+<?php
 	$h=0;
 	while ($favorites_count > $h)
 	{
@@ -2891,7 +2892,7 @@ echo "</head>\n";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

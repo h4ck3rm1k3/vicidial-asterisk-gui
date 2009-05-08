@@ -1,7 +1,7 @@
-<?
+<?php
 # closer_dispo.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this is the closer disposition screen of a call that has been grabbed. This 
 # allows the closer to modify customer information and disposition the call
@@ -9,6 +9,7 @@
 # CHANGES
 #
 # 60619-1641 - Added variable filtering to eliminate SQL injection attack threat
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -143,14 +144,14 @@ $browser = getenv("HTTP_USER_AGENT");
 <html>
 <head>
 <title>VICIDIAL CLOSER: Call Disposition</title>
-<?
+<?php
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 ?>
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
 
-<? 
+<?php 
 
 if ($end_call > 0)
 {
@@ -317,7 +318,7 @@ echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds</font>";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

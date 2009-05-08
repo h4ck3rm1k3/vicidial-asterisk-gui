@@ -1,4 +1,4 @@
-<?
+<?php
 # call_report_export.php
 # 
 # displays options to select for downloading of leads and their vicidial_log 
@@ -11,6 +11,7 @@
 #
 # 90310-2247 - First build
 # 90330-1343 - Added more debug info, bug fixes
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");

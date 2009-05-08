@@ -1,5 +1,5 @@
-<?
-# conf_exten_check.php    version 2.0.5
+<?php
+# conf_exten_check.php    version 2.2.0
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -44,10 +44,11 @@
 # 90120-1720 - Added compatibility for API pause/resume and dial a number
 # 90307-1855 - Added shift enforcement to send logout flag if outside of shift hours
 # 90408-0020 - Added API vtiger specific callback activity record ability
+# 90508-0727 - Changed to PHP long tags
 #
 
-$version = '2.2.0-19';
-$build = '90408-0020';
+$version = '2.2.0-20';
+$build = '90508-0727';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=17;
 $one_mysql_log=0;

@@ -1,7 +1,7 @@
-<?
+<?php
 # closer_popup.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this is the closer popup of a specific call that grabs the call and allows you
 # to go and fetch info on that caller in the local CRM system.
@@ -9,6 +9,7 @@
 # CHANGES
 #
 # 60620-1029 - Added variable filtering to eliminate SQL injection attack threat
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -139,7 +140,7 @@ if (eregi('CL_UNIV',$channel_group))
 		}
 	}
 	</script>
-	<?
+	<?php
 	}
 else 
 	{
@@ -152,7 +153,7 @@ else
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad="document.forms[0].search_phone.focus(); setTimeout('document.forms[0].search_phone.focus()', 1000)">
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
 
-<? 
+<?php 
 
 $stmt="SELECT count(*) from parked_channels where server_ip='$server_ip' and parked_time='$parked_time' and channel='$channel'";
 $rslt=mysql_query($stmt, $link);
@@ -236,17 +237,17 @@ if (eregi('CL_TEST',$channel_group))
 
 	?>
 	<form action="http://10.10.10.196/vicidial/closer_lookup3.php" method="post">
-		<input type=hidden name="fronter" value="<?=$fronter ?>">
-		<input type=hidden name="closer" value="<?=$PHP_AUTH_USER ?>">
-		<input type=hidden name="group" value="<?=$channel_group ?>">
-		<input type=hidden name="recording_id" value="<?=$recording_id ?>">
+		<input type=hidden name="fronter" value="<?php echo $fronter ?>">
+		<input type=hidden name="closer" value="<?php echo $PHP_AUTH_USER ?>">
+		<input type=hidden name="group" value="<?php echo $channel_group ?>">
+		<input type=hidden name="recording_id" value="<?php echo $recording_id ?>">
 	<table border=0 cellspacing=5 cellpadding=3 align=center width=90%>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><font class='standard_bold' color='white'>COF MW Customer Search</font></th>
 	</tr>
 	<tr bgcolor='#99FF99'>
 		<td align=right width="50%" nowrap><font class='standard_bold'>Phone number</font></td>
-		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?=$search_phone ?>"></td>
+		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?php echo $search_phone ?>"></td>
 	</tr>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><input type=submit name="submit_COF" value="SEARCH"></th>
@@ -254,7 +255,7 @@ if (eregi('CL_TEST',$channel_group))
 	</table>
 	</form>
 	<BR><BR>
-	<?
+	<?php
 	}
 
 if (eregi('CL_MWCOF',$channel_group))
@@ -271,17 +272,17 @@ if (eregi('CL_MWCOF',$channel_group))
 
 	?>
 	<form action="http://10.10.10.196/vicidial/closer_lookup3.php" method="post">
-		<input type=hidden name="fronter" value="<?=$fronter ?>">
-		<input type=hidden name="closer" value="<?=$PHP_AUTH_USER ?>">
-		<input type=hidden name="group" value="<?=$channel_group ?>">
-		<input type=hidden name="recording_id" value="<?=$recording_id ?>">
+		<input type=hidden name="fronter" value="<?php echo $fronter ?>">
+		<input type=hidden name="closer" value="<?php echo $PHP_AUTH_USER ?>">
+		<input type=hidden name="group" value="<?php echo $channel_group ?>">
+		<input type=hidden name="recording_id" value="<?php echo $recording_id ?>">
 	<table border=0 cellspacing=5 cellpadding=3 align=center width=90%>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><font class='standard_bold' color='white'>COF MW Customer Search</font></th>
 	</tr>
 	<tr bgcolor='#99FF99'>
 		<td align=right width="50%" nowrap><font class='standard_bold'>Phone number</font></td>
-		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?=$search_phone ?>"></td>
+		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?php echo $search_phone ?>"></td>
 	</tr>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><input type=submit name="submit_COF" value="SEARCH"></th>
@@ -289,7 +290,7 @@ if (eregi('CL_MWCOF',$channel_group))
 	</table>
 	</form>
 	<BR><BR>
-	<?
+	<?php
 	}
 
 
@@ -323,17 +324,17 @@ if (eregi('CL_GAL',$channel_group))
 
 	?>
 	<form action="http://10.10.10.196/vicidial/closer_lookup3.php" method="post">
-		<input type=hidden name="fronter" value="<?=$parked_by ?>">
-		<input type=hidden name="closer" value="<?=$PHP_AUTH_USER ?>">
-		<input type=hidden name="group" value="<?=$channel_group ?>">
-		<input type=hidden name="recording_id" value="<?=$recording_id ?>">
+		<input type=hidden name="fronter" value="<?php echo $parked_by ?>">
+		<input type=hidden name="closer" value="<?php echo $PHP_AUTH_USER ?>">
+		<input type=hidden name="group" value="<?php echo $channel_group ?>">
+		<input type=hidden name="recording_id" value="<?php echo $recording_id ?>">
 	<table border=0 cellspacing=5 cellpadding=3 align=center width=90%>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><font class='standard_bold' color='white'>COF MW Customer Search</font></th>
 	</tr>
-	<tr bgcolor="<?=$group_color ?>">
+	<tr bgcolor="<?php echo $group_color ?>">
 		<td align=right width="50%" nowrap><font class='standard_bold'>Phone number</font></td>
-		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?=$phone ?>"></td>
+		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?php echo $phone ?>"></td>
 	</tr>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><input type=submit name="submit_COF" value="SEARCH"></th>
@@ -344,15 +345,15 @@ if (eregi('CL_GAL',$channel_group))
 	
 <!----
 	<form action="http://10.10.10.196/vicidial/closer_lookup3.php" method="post">
-		<input type=hidden name="fronter" value="<?=$parked_by ?>">
-		<input type=hidden name="closer" value="<?=$PHP_AUTH_USER ?>">
+		<input type=hidden name="fronter" value="<?php echo $parked_by ?>">
+		<input type=hidden name="closer" value="<?php echo $PHP_AUTH_USER ?>">
 	<table border=0 cellspacing=5 cellpadding=3 align=center width=90%>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><font class='standard_bold' color='white'>NEW COF BlueGreen Customer Search</font></th>
 	</tr>
 	<tr bgcolor='#CCCCCC'>
 		<td align=right width="50%" nowrap><font class='standard_bold'>Phone number</font></td>
-		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?=$phone ?>"></td>
+		<td align=left width="50%" nowrap><input type=text size=10 maxlength=10 name="search_phone" value="<?php echo $phone ?>"></td>
 	</tr>
 	<tr>
 		<th colspan=2 bgcolor='#666666'><input type=submit name="submit_COF" value="SEARCH"></th>
@@ -362,7 +363,7 @@ if (eregi('CL_GAL',$channel_group))
 	<BR><BR>
 ---->
 
-	<?
+	<?php
 	}
 
 
@@ -374,10 +375,10 @@ if (eregi('CL_UNIV',$channel_group))
 	?>
 
 	<form action="uk_mail_lookup.php" method="post" onSubmit="return CheckForm()">
-		<input type=hidden name="fronter" value="<?=$parked_by ?>">
-		<input type=hidden name="closer" value="<?=$PHP_AUTH_USER ?>">
-		<input type=hidden name="group" value="<?=$channel_group ?>">
-		<input type=hidden name="recording_id" value="<?=$recording_id ?>">
+		<input type=hidden name="fronter" value="<?php echo $parked_by ?>">
+		<input type=hidden name="closer" value="<?php echo $PHP_AUTH_USER ?>">
+		<input type=hidden name="group" value="<?php echo $channel_group ?>">
+		<input type=hidden name="recording_id" value="<?php echo $recording_id ?>">
 	<table border=0 width=80% cellpadding=5 cellspacing=0 align=center>
 	<tr>
 			<th colspan=2 bgcolor='#CCCCCC'><font class='standard_bold'>New Search</font></th>
@@ -406,7 +407,7 @@ if (eregi('CL_UNIV',$channel_group))
 	</form>
 
 
-	<?
+	<?php
 
 	}
 
@@ -441,7 +442,7 @@ echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds</font>";
 </body>
 </html>
 
-<?
+<?php
 	
 exit; 
 

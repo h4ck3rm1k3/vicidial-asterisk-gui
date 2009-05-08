@@ -1,4 +1,4 @@
-<? 
+<?php 
 # AST_CLOSERstats.php
 # 
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -20,6 +20,7 @@
 # 81109-2340 - Added custom indicators section
 # 90116-1040 - Rewrite of the 15-minute sections to speed it up and allow multi-day calculations
 # 90310-2037 - Admin header
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -161,7 +162,7 @@ while ($i < $statcats_to_print)
 -->
  </STYLE>
 
-<? 
+<?php 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: VDAD Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 

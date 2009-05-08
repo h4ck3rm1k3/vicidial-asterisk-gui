@@ -1,12 +1,13 @@
-<? 
+<?php 
 # sph_report.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 80502-0857 - First build
 # 80506-0228 - Added user field to search by
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
@@ -172,7 +173,7 @@ while ($i < $user_groups_to_print)
 
 </HEAD><BODY BGCOLOR=WHITE>
 
-<?
+<?php
 $campaign_ct = count($campaign);
 $group_ct = count($group);
 $user_group_ct = count($user_group);

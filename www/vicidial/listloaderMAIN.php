@@ -1,7 +1,7 @@
-<?
+<?php
 # listloaderMAIN.php
 # 
-# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this is the main frame page for the lead loading section. This is where you 
 # would upload a file and have it inserted into vicidial_list
@@ -9,6 +9,7 @@
 # changes:
 # 60620-1149 - Added variable filtering to eliminate SQL injection attack threat
 # 60822-1105 - fixed for nonwritable directories
+# 90508-0644 - Changed to PHP long tags
 #
 
 require("dbconnect.php");
